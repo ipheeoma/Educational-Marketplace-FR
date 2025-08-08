@@ -1,17 +1,27 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+'use client'
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import Link from 'next/link'
 import { BookOpen, Menu, X } from 'lucide-react'
-import { useState } from "react"
-import { WalletButton } from "@/components/wallet/WalletButton"
+import { WalletButton } from '@/components/wallet/WalletButton'
 
 export default function SignInPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('Sign In Attempt:', { email, password })
+    // Implement actual sign-in logic here (e.g., API call)
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,38 +95,55 @@ export default function SignInPage() {
         </div>
       </nav>
 
-      <main className="flex-1 flex items-center justify-center py-12 px-4">
+      <div className="flex items-center justify-center py-12 lg:py-20">
         <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold">Sign In</CardTitle>
-            <CardDescription>Enter your email below to sign in to your account.</CardDescription>
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold text-slate-900">Sign In</CardTitle>
+            <CardDescription className="text-slate-600">
+              Enter your credentials to access your account.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" placeholder="m@example.com" required type="email" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link className="text-sm underline" href="#">
-                  Forgot password?
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <Link href="#" className="text-sm text-blue-600 hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                Sign In
+              </Button>
+              <div className="text-center text-sm text-slate-600">
+                Don't have an account?{' '}
+                <Link href="/auth/signup" className="text-blue-600 hover:underline">
+                  Sign Up
                 </Link>
               </div>
-              <Input id="password" required type="password" />
-            </div>
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-              Sign In
-            </Button>
-            <div className="text-center text-sm text-gray-500">
-              Don't have an account?{" "}
-              <Link className="underline" href="/auth/signup">
-                Sign Up
-              </Link>
-            </div>
+            </form>
           </CardContent>
         </Card>
-      </main>
+      </div>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">

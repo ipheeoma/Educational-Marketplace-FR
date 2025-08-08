@@ -1,18 +1,50 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+'use client'
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BookOpen, Menu, X } from 'lucide-react'
-import { useState } from "react"
-import { WalletButton } from "@/components/wallet/WalletButton"
+import Link from 'next/link'
+import Image from 'next/image'
+import { WalletButton } from '@/components/wallet/WalletButton'
 
 export default function CheckoutPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  const cartItems = [
+    {
+      id: 1,
+      title: "Complete Web Development Bootcamp",
+      instructor: "Sarah Johnson",
+      price: 89,
+      image: "/web-development-course.png",
+    },
+    {
+      id: 3,
+      title: "Data Science & Machine Learning",
+      instructor: "Dr. Michael Chen",
+      price: 129,
+      image: "/data-science-course.png",
+    },
+  ]
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0)
+  const taxRate = 0.08 // 8% tax
+  const tax = subtotal * taxRate
+  const total = subtotal + tax
+
+  const handlePlaceOrder = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log("Placing order...")
+    // Implement order placement logic here
+    alert("Order placed successfully! (This is a demo)")
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -86,76 +118,147 @@ export default function CheckoutPage() {
         </div>
       </nav>
 
-      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-4xl font-bold text-slate-900 mb-8 text-center">Checkout</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">Checkout</h1>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-3 gap-8">
           {/* Order Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between">
-                <p className="text-slate-700">Complete Web Development Bootcamp</p>
-                <p className="font-semibold text-slate-900">$89.00</p>
-              </div>
-              <div className="flex justify-between">
-                <p className="text-slate-700">Subtotal</p>
-                <p className="font-semibold text-slate-900">$89.00</p>
-              </div>
-              <div className="flex justify-between font-bold text-lg">
-                <p className="text-slate-900">Total</p>
-                <p className="text-slate-900">$89.00</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="lg:col-span-1 order-last lg:order-first">
+            <Card className="p-6 shadow-md sticky top-24">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">Order Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 space-y-4">
+                <div className="space-y-3">
+                  {cartItems.map(item => (
+                    <div key={item.id} className="flex items-center space-x-4">
+                      <Image
+                        src={item.image || "/placeholder.svg"}
+                        alt={item.title}
+                        width={64}
+                        height={64}
+                        className="rounded-md object-cover"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-medium text-slate-900">{item.title}</h3>
+                        <p className="text-sm text-slate-600">by {item.instructor}</p>
+                      </div>
+                      <span className="font-semibold text-slate-900">${item.price}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="border-t border-slate-200 pt-4 space-y-2">
+                  <div className="flex justify-between text-slate-700">
+                    <span>Subtotal</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-700">
+                    <span>Tax ({taxRate * 100}%)</span>
+                    <span>${tax.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-xl text-slate-900 pt-2">
+                    <span>Total</span>
+                    <span>${total.toFixed(2)}</span>
+                  </div>
+                </div>
+                <Button
+                  onClick={handlePlaceOrder}
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-lg"
+                >
+                  Place Order
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Payment Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Information</CardTitle>
-              <CardDescription>Enter your payment details to complete the purchase.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="card-number">Card Number</Label>
-                <Input id="card-number" placeholder="XXXX-XXXX-XXXX-XXXX" required type="text" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="expiry-date">Expiry Date</Label>
-                  <Input id="expiry-date" placeholder="MM/YY" required type="text" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cvv">CVV</Label>
-                  <Input id="cvv" placeholder="XXX" required type="text" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="card-name">Name on Card</Label>
-                <Input id="card-name" placeholder="John Doe" required type="text" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="usa">United States</SelectItem>
-                    <SelectItem value="canada">Canada</SelectItem>
-                    <SelectItem value="uk">United Kingdom</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                Complete Purchase
-              </Button>
-            </CardContent>
-          </Card>
+          {/* Payment and Billing Details */}
+          <div className="lg:col-span-2 space-y-8">
+            <Card className="p-6 shadow-md">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">Payment Information</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <form className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="card-number">Card Number</Label>
+                    <Input id="card-number" placeholder="XXXX XXXX XXXX XXXX" required />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="expiry-date">Expiry Date</Label>
+                      <Input id="expiry-date" placeholder="MM/YY" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="cvv">CVV</Label>
+                      <Input id="cvv" placeholder="XXX" required />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="card-name">Name on Card</Label>
+                    <Input id="card-name" placeholder="John Doe" required />
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card className="p-6 shadow-md">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">Billing Address</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <form className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="address1">Address Line 1</Label>
+                    <Input id="address1" placeholder="123 Main St" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address2">Address Line 2 (Optional)</Label>
+                    <Input id="address2" placeholder="Apt 4B" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input id="city" placeholder="New York" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Select>
+                        <SelectTrigger id="state">
+                          <SelectValue placeholder="Select State" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="NY">New York</SelectItem>
+                          <SelectItem value="CA">California</SelectItem>
+                          <SelectItem value="TX">Texas</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="zip">Zip Code</Label>
+                      <Input id="zip" placeholder="10001" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country">Country</Label>
+                      <Select>
+                        <SelectTrigger id="country">
+                          <SelectValue placeholder="Select Country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="US">United States</SelectItem>
+                          <SelectItem value="CA">Canada</SelectItem>
+                          <SelectItem value="GB">United Kingdom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">
