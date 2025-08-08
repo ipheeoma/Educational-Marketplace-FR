@@ -10,6 +10,7 @@ import { BookOpen, Users, Award, TrendingUp, Search, Star, Play, Clock, Globe, C
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -65,6 +66,7 @@ export default function HomePage() {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-4">
+              <WalletButton />
               <Link href="/auth/signin">
                 <Button variant="ghost" className="hidden sm:inline-flex">Sign In</Button>
               </Link>
@@ -92,6 +94,9 @@ export default function HomePage() {
                 <Link href="/courses?view=categories" className="block text-slate-600 hover:text-slate-900 font-medium">Categories</Link>
                 <Link href="/about" className="block text-slate-600 hover:text-slate-900 font-medium">About</Link>
                 <div className="pt-3 border-t">
+                  <div className="mb-3">
+                    <WalletButton />
+                  </div>
                   <Link href="/auth/signin">
                     <Button variant="ghost" className="w-full justify-start mb-2">Sign In</Button>
                   </Link>

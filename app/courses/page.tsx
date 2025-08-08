@@ -11,6 +11,7 @@ import { Slider } from "@/components/ui/slider"
 import { Search, Star, Clock, Users, BookOpen, SlidersHorizontal } from 'lucide-react'
 import Image from "next/image"
 import Link from "next/link"
+import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function CoursesPage() {
   const searchParams = useSearchParams()
@@ -197,6 +198,7 @@ export default function CoursesPage() {
               <span className="text-xl font-bold text-slate-800">EduMarket</span>
             </Link>
             <div className="flex items-center space-x-4">
+              <WalletButton />
               <Link href="/auth/signin">
                 <Button variant="ghost">Sign In</Button>
               </Link>
