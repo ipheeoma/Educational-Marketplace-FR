@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { BookOpen, LayoutDashboard, GraduationCap, Settings, Menu, X } from 'lucide-react'
+import { BookOpen, LayoutDashboard, GraduationCap, Settings, Menu, X, Award } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { WalletButton } from '@/components/wallet/WalletButton'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 
 export default function DashboardPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
