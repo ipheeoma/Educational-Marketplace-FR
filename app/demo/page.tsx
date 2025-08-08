@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { BookOpen, PlayCircle, Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image' // Add this line
 import { WalletButton } from '@/components/wallet/WalletButton'
 
 export default function DemoPage() {
