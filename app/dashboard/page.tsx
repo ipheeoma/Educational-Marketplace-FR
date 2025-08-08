@@ -1,15 +1,28 @@
 'use client'
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { BookOpen, Menu, X, Star, Clock, Users } from 'lucide-react'
-import { WalletButton } from "@/components/wallet/WalletButton"
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { BookOpen, LayoutDashboard, GraduationCap, Settings, Menu, X, Award } from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { WalletButton } from '@/components/wallet/WalletButton'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 
 export default function DashboardPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const user = {
+    name: "Jane Doe",
+    email: "jane.doe@example.com",
+    avatar: "/professional-headshot-female.png",
+    coursesEnrolled: 5,
+    coursesCompleted: 2,
+    progress: 40, // Overall progress
+  }
 
   const enrolledCourses = [
     {
@@ -18,34 +31,25 @@ export default function DashboardPage() {
       instructor: "Sarah Johnson",
       progress: 75,
       image: "/web-development-course.png",
-      rating: 4.9,
-      students: 12500,
-      duration: "42 hours",
     },
     {
       id: 2,
       title: "Data Science & Machine Learning",
       instructor: "Dr. Michael Chen",
-      progress: 40,
+      progress: 20,
       image: "/data-science-course.png",
-      rating: 4.8,
-      students: 8900,
-      duration: "45 hours",
     },
     {
-      id: 3,
-      title: "Advanced React & Redux Masterclass",
-      instructor: "Mike Wilson",
+      id: 4,
+      title: "UI/UX Design Masterclass",
+      instructor: "Emma Rodriguez",
       progress: 90,
-      image: "/react-redux-course.png",
-      rating: 4.8,
-      students: 8900,
-      duration: "38 hours",
+      image: "/ui-ux-design-course.png",
     },
   ]
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -119,89 +123,115 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-4xl font-bold text-slate-900 mb-8">My Dashboard</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">Welcome, {user.name}!</h1>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-slate-900">Total Enrolled Courses</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-5xl font-bold text-blue-600">12</p>
-            </CardContent>
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <Card className="p-6 text-center shadow-md">
+            <CardTitle className="text-2xl font-bold text-slate-900">{user.coursesEnrolled}</CardTitle>
+            <CardDescription className="text-slate-600">Courses Enrolled</CardDescription>
           </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-slate-900">Courses Completed</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-5xl font-bold text-green-600">8</p>
-            </CardContent>
+          <Card className="p-6 text-center shadow-md">
+            <CardTitle className="text-2xl font-bold text-slate-900">{user.coursesCompleted}</CardTitle>
+            <CardDescription className="text-slate-600">Courses Completed</CardDescription>
           </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-slate-900">Certificates Earned</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-5xl font-bold text-purple-600">5</p>
-            </CardContent>
+          <Card className="p-6 text-center shadow-md">
+            <CardTitle className="text-2xl font-bold text-slate-900">{user.progress}%</CardTitle>
+            <CardDescription className="text-slate-600">Overall Progress</CardDescription>
+            <Progress value={user.progress} className="mt-4 h-2" />
           </Card>
         </div>
 
-        <h2 className="text-3xl font-bold text-slate-900 mb-6">My Learning</h2>
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {enrolledCourses.map((course) => (
-            <Card key={course.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
-              <div className="relative overflow-hidden rounded-t-lg">
-                <Image
-                  src={course.image || "/placeholder.svg"}
-                  alt={course.title}
-                  width={300}
-                  height={200}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardContent className="p-6 space-y-4">
-                <div className="space-y-2">
-                  <Link href={`/course/${course.id}`} className="hover:text-blue-600 transition-colors">
-                    <h3 className="text-lg font-semibold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-                      {course.title}
-                    </h3>
-                  </Link>
-                  <p className="text-slate-600">by {course.instructor}</p>
-                </div>
-                <div className="flex items-center space-x-4 text-sm text-slate-500">
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span>{course.rating}</span>
+        <Tabs defaultValue="my-courses" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4 h-12">
+            <TabsTrigger value="my-courses" className="text-base">My Courses</TabsTrigger>
+            <TabsTrigger value="wishlist" className="text-base">Wishlist</TabsTrigger>
+            <TabsTrigger value="certificates" className="text-base">Certificates</TabsTrigger>
+            <TabsTrigger value="settings" className="text-base">Settings</TabsTrigger>
+          </TabsList>
+          <TabsContent value="my-courses" className="mt-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Currently Enrolled</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {enrolledCourses.map(course => (
+                <Card key={course.id} className="shadow-md">
+                  <div className="relative h-40 w-full rounded-t-lg overflow-hidden">
+                    <Image
+                      src={course.image || "/placeholder.svg"}
+                      alt={course.title}
+                      layout="fill"
+                      objectFit="cover"
+                    />
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <Users className="w-4 h-4" />
-                    <span>{course.students.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Clock className="w-4 h-4" />
-                    <span>{course.duration}</span>
-                  </div>
-                </div>
-                <div className="pt-4 space-y-2">
-                  <div className="flex justify-between text-sm font-medium text-slate-700">
-                    <span>Progress</span>
-                    <span>{course.progress}%</span>
-                  </div>
-                  <Progress value={course.progress} className="w-full" />
-                </div>
-                <Link href={`/course/${course.id}`}>
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                    Continue Learning
-                  </Button>
+                  <CardContent className="p-4 space-y-3">
+                    <h3 className="text-lg font-semibold text-slate-900">{course.title}</h3>
+                    <p className="text-sm text-slate-600">by {course.instructor}</p>
+                    <div className="flex items-center space-x-2">
+                      <Progress value={course.progress} className="h-2 flex-1" />
+                      <span className="text-sm text-slate-700">{course.progress}%</span>
+                    </div>
+                    <Link href={`/course/${course.id}`}>
+                      <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                        Continue Learning
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            {enrolledCourses.length === 0 && (
+              <div className="text-center py-12">
+                <GraduationCap className="w-16 h-16 mx-auto text-slate-400 mb-4" />
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">No courses enrolled yet!</h3>
+                <p className="text-slate-600 mb-4">Start your learning journey by exploring our courses.</p>
+                <Link href="/courses">
+                  <Button variant="outline">Browse Courses</Button>
                 </Link>
+              </div>
+            )}
+          </TabsContent>
+          <TabsContent value="wishlist" className="mt-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">My Wishlist</h2>
+            <div className="text-center py-12">
+              <BookOpen className="w-16 h-16 mx-auto text-slate-400 mb-4" />
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">Your wishlist is empty</h3>
+              <p className="text-slate-600 mb-4">Add courses you're interested in to your wishlist.</p>
+              <Link href="/courses">
+                <Button variant="outline">Browse Courses</Button>
+              </Link>
+            </div>
+          </TabsContent>
+          <TabsContent value="certificates" className="mt-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">My Certificates</h2>
+            <div className="text-center py-12">
+              <Award className="w-16 h-16 mx-auto text-slate-400 mb-4" />
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">No certificates earned yet!</h3>
+              <p className="text-slate-600 mb-4">Complete courses to earn your certificates.</p>
+              <Link href="/courses">
+                <Button variant="outline">Explore Courses</Button>
+              </Link>
+            </div>
+          </TabsContent>
+          <TabsContent value="settings" className="mt-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Account Settings</h2>
+            <Card className="p-6 shadow-md">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-xl font-bold text-slate-900">Profile Information</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 space-y-4">
+                <div>
+                  <Label htmlFor="name">Name</Label>
+                  <Input id="name" defaultValue={user.name} />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" defaultValue={user.email} disabled />
+                </div>
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">Save Changes</Button>
               </CardContent>
             </Card>
-          ))}
-        </div>
-      </main>
+          </TabsContent>
+        </Tabs>
+      </div>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">

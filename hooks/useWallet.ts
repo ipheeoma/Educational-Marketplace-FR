@@ -1,145 +1,172 @@
 import { useState, useEffect, useCallback } from 'react';
-import { connectMetaMask, getBalance, shortenAddress, switchNetwork, SUPPORTED_NETWORKS, NetworkId, NetworkInfo } from '@/lib/wallet';
+import { connectMetamask, disconnectMetamask, getMetamaskBalance, switchMetamaskNetwork, connectPhantom, disconnectPhantom, connectWalletConnect, disconnectWalletConnect } from '@/lib/wallet';
+import { ethers } from 'ethers';
+
+export type WalletType = 'metamask' | 'walletconnect' | 'phantom' | null;
 
 interface WalletState {
   address: string | null;
-  chainId: NetworkId | null;
   balance: string | null;
+  walletType: WalletType;
+  chainId: string | null;
   isConnected: boolean;
+  isLoading: boolean;
   error: string | null;
-  networkInfo: NetworkInfo | null;
 }
 
-const defaultState: WalletState = {
-  address: null,
-  chainId: null,
-  balance: null,
-  isConnected: false,
-  error: null,
-  networkInfo: null,
-};
-
-export const useWallet = () => {
-  const [wallet, setWallet] = useState<WalletState>(() => {
-    // Initialize from session storage if available
-    if (typeof window !== 'undefined') {
-      const storedAddress = sessionStorage.getItem('walletAddress');
-      const storedChainId = sessionStorage.getItem('walletChainId');
-      if (storedAddress && storedChainId) {
-        const chainIdNum = Number(storedChainId);
-        const networkInfo = SUPPORTED_NETWORKS[chainIdNum as NetworkId];
-        return {
-          address: storedAddress,
-          chainId: chainIdNum as NetworkId,
-          balance: null, // Will be fetched on mount
-          isConnected: true,
-          error: null,
-          networkInfo: networkInfo || null,
-        };
-      }
-    }
-    return defaultState;
+export function useWallet() {
+  const [wallet, setWallet] = useState<WalletState>({
+    address: null,
+    balance: null,
+    walletType: null,
+    chainId: null,
+    isConnected: false,
+    isLoading: false,
+    error: null,
   });
 
-  const updateWalletState = useCallback((updates: Partial<WalletState>) => {
-    setWallet(prevState => ({ ...prevState, ...updates }));
+  const updateWalletState = useCallback(async (
+    newAddress: string | null,
+    newWalletType: WalletType,
+    newChainId: string | null
+  ) => {
+    setWallet(prev => ({ ...prev, isLoading: true, error: null }));
+    let balance = null;
+    if (newAddress && newWalletType === 'metamask') {
+      balance = await getMetamaskBalance(newAddress);
+    }
+    setWallet({
+      address: newAddress,
+      balance,
+      walletType: newWalletType,
+      chainId: newChainId,
+      isConnected: !!newAddress,
+      isLoading: false,
+      error: null,
+    });
   }, []);
 
-  const connectWallet = useCallback(async () => {
-    updateWalletState({ error: null });
+  const connectWallet = useCallback(async (type: WalletType) => {
+    setWallet(prev => ({ ...prev, isLoading: true, error: null }));
+    let address: string | null = null;
+    let chainId: string | null = null;
+
     try {
-      const { address, chainId } = await connectMetaMask();
-      const networkInfo = SUPPORTED_NETWORKS[chainId as NetworkId];
-      if (!networkInfo) {
-        throw new Error(`Unsupported network detected: ${chainId}. Please switch to a supported network like Polygon.`);
+      if (type === 'metamask') {
+        address = await connectMetamask();
+        if (address && window.ethereum) {
+          chainId = window.ethereum.chainId;
+        }
+      } else if (type === 'phantom') {
+        address = await connectPhantom();
+        // Phantom (Solana) doesn't have a chainId like EVM, but we can infer network if needed
+        chainId = 'solana'; // Placeholder for Solana network
+      } else if (type === 'walletconnect') {
+        address = await connectWalletConnect();
+        // WalletConnect would typically provide chainId upon connection
+        chainId = 'unknown'; // Placeholder
       }
-      const fetchedBalance = await getBalance(address, chainId);
-
-      sessionStorage.setItem('walletAddress', address);
-      sessionStorage.setItem('walletChainId', String(chainId));
-
-      updateWalletState({
-        address,
-        chainId,
-        balance: fetchedBalance,
-        isConnected: true,
-        networkInfo,
-      });
+      await updateWalletState(address, type, chainId);
     } catch (err: any) {
       console.error("Failed to connect wallet:", err);
-      updateWalletState({ error: err.message || "Failed to connect wallet." });
-      disconnectWallet(); // Ensure state is reset on error
+      setWallet(prev => ({ ...prev, isLoading: false, error: err.message || "Failed to connect wallet" }));
     }
   }, [updateWalletState]);
 
-  const disconnectWallet = useCallback(() => {
-    sessionStorage.removeItem('walletAddress');
-    sessionStorage.removeItem('walletChainId');
-    updateWalletState(defaultState);
-  }, [updateWalletState]);
-
-  const fetchBalance = useCallback(async () => {
-    if (wallet.address && wallet.chainId) {
-      try {
-        const fetchedBalance = await getBalance(wallet.address, wallet.chainId);
-        updateWalletState({ balance: fetchedBalance });
-      } catch (err: any) {
-        console.error("Failed to fetch balance:", err);
-        updateWalletState({ error: err.message || "Failed to fetch balance." });
+  const disconnectWallet = useCallback(async () => {
+    setWallet(prev => ({ ...prev, isLoading: true, error: null }));
+    try {
+      if (wallet.walletType === 'metamask') {
+        await disconnectMetamask();
+      } else if (wallet.walletType === 'phantom') {
+        await disconnectPhantom();
+      } else if (wallet.walletType === 'walletconnect') {
+        await disconnectWalletConnect();
       }
+      await updateWalletState(null, null, null);
+    } catch (err: any) {
+      console.error("Failed to disconnect wallet:", err);
+      setWallet(prev => ({ ...prev, isLoading: false, error: err.message || "Failed to disconnect wallet" }));
     }
-  }, [wallet.address, wallet.chainId, updateWalletState]);
+  }, [wallet.walletType, updateWalletState]);
 
-  const handleAccountsChanged = useCallback((accounts: string[]) => {
-    if (accounts.length === 0) {
-      disconnectWallet();
+  const switchNetwork = useCallback(async (chainId: string) => {
+    if (wallet.walletType === 'metamask') {
+      setWallet(prev => ({ ...prev, isLoading: true, error: null }));
+      const success = await switchMetamaskNetwork(chainId);
+      if (success) {
+        // Re-fetch state after successful switch
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const address = await signer.getAddress();
+        const balance = await getMetamaskBalance(address);
+        setWallet(prev => ({
+          ...prev,
+          address,
+          balance,
+          chainId,
+          isLoading: false,
+          error: null,
+        }));
+      } else {
+        setWallet(prev => ({ ...prev, isLoading: false, error: "Failed to switch network" }));
+      }
     } else {
-      updateWalletState({ address: accounts[0], error: null });
-      fetchBalance();
+      setWallet(prev => ({ ...prev, error: "Network switching only supported for MetaMask" }));
     }
-  }, [disconnectWallet, updateWalletState, fetchBalance]);
+  }, [wallet.walletType]);
 
-  const handleChainChanged = useCallback((chainIdHex: string) => {
-    const newChainId = Number(chainIdHex);
-    const networkInfo = SUPPORTED_NETWORKS[newChainId as NetworkId];
-    if (networkInfo) {
-      updateWalletState({ chainId: newChainId as NetworkId, networkInfo, error: null });
-      fetchBalance();
-    } else {
-      updateWalletState({
-        chainId: newChainId as NetworkId,
-        networkInfo: null,
-        error: `Unsupported network: ${newChainId}. Please switch to a supported network.`,
-      });
-      // Optionally, prompt to switch or disconnect
-    }
-  }, [updateWalletState, fetchBalance]);
-
+  // Effect to listen for MetaMask account/chain changes
   useEffect(() => {
-    if (typeof window.ethereum !== 'undefined') {
-      // Initial fetch of balance if already connected via session storage
-      if (wallet.isConnected && wallet.address && wallet.chainId && !wallet.balance) {
-        fetchBalance();
-      }
+    if (typeof window.ethereum !== 'undefined' && wallet.walletType === 'metamask') {
+      const handleAccountsChanged = (accounts: string[]) => {
+        console.log("Accounts changed:", accounts);
+        updateWalletState(accounts[0] || null, 'metamask', wallet.chainId);
+      };
+
+      const handleChainChanged = (chainId: string) => {
+        console.log("Chain changed:", chainId);
+        updateWalletState(wallet.address, 'metamask', chainId);
+      };
 
       window.ethereum.on('accountsChanged', handleAccountsChanged);
       window.ethereum.on('chainChanged', handleChainChanged);
 
+      // Cleanup
       return () => {
-        if (window.ethereum.removeListener) {
-          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-          window.ethereum.removeListener('chainChanged', handleChainChanged);
-        }
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
       };
     }
-  }, [wallet.isConnected, wallet.address, wallet.chainId, wallet.balance, fetchBalance, handleAccountsChanged, handleChainChanged]);
+  }, [wallet.address, wallet.chainId, wallet.walletType, updateWalletState]);
+
+  // Effect to check initial connection on load
+  useEffect(() => {
+    const checkInitialConnection = async () => {
+      setWallet(prev => ({ ...prev, isLoading: true }));
+      if (typeof window.ethereum !== 'undefined') {
+        try {
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const accounts = await provider.listAccounts();
+          if (accounts.length > 0) {
+            const address = accounts[0].address;
+            const chainId = window.ethereum.chainId;
+            await updateWalletState(address, 'metamask', chainId);
+          }
+        } catch (error) {
+          console.error("Error checking initial MetaMask connection:", error);
+        }
+      }
+      // Add similar checks for Phantom if needed
+      setWallet(prev => ({ ...prev, isLoading: false }));
+    };
+    checkInitialConnection();
+  }, [updateWalletState]);
 
   return {
     ...wallet,
-    shortenedAddress: wallet.address ? shortenAddress(wallet.address) : null,
     connectWallet,
     disconnectWallet,
     switchNetwork,
-    fetchBalance,
   };
-};
+}

@@ -1,18 +1,28 @@
 'use client'
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import Link from 'next/link'
 import { BookOpen, Menu, X } from 'lucide-react'
-import { WalletButton } from "@/components/wallet/WalletButton"
+import { WalletButton } from '@/components/wallet/WalletButton'
 
 export default function SignUpPage() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('Sign Up Attempt:', { name, email, password })
+    // Implement actual sign-up logic here (e.g., API call)
+  }
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -86,39 +96,61 @@ export default function SignUpPage() {
         </div>
       </nav>
 
-      <main className="flex-1 flex items-center justify-center p-4">
+      <div className="flex items-center justify-center py-12 lg:py-20">
         <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
-            <CardDescription>Create your account to get started</CardDescription>
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold text-slate-900">Sign Up</CardTitle>
+            <CardDescription className="text-slate-600">
+              Create your account to start learning.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" type="text" placeholder="John Doe" required />
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
               <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
                 Sign Up
               </Button>
+              <div className="text-center text-sm text-slate-600">
+                Already have an account?{' '}
+                <Link href="/auth/signin" className="text-blue-600 hover:underline">
+                  Sign In
+                </Link>
+              </div>
             </form>
-            <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
-              <Link href="/auth/signin" className="underline text-blue-600 hover:text-blue-800">
-                Sign In
-              </Link>
-            </div>
           </CardContent>
         </Card>
-      </main>
+      </div>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">

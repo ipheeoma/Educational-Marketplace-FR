@@ -1,28 +1,50 @@
 'use client'
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BookOpen, Menu, X } from 'lucide-react'
-import { WalletButton } from "@/components/wallet/WalletButton"
+import Link from 'next/link'
+import Image from 'next/image'
+import { WalletButton } from '@/components/wallet/WalletButton'
 
 export default function CheckoutPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState("credit-card")
 
-  const course = {
-    id: 1,
-    title: "Complete Web Development Bootcamp",
-    instructor: "Sarah Johnson",
-    price: 89,
-    image: "/web-development-course.png",
+  const cartItems = [
+    {
+      id: 1,
+      title: "Complete Web Development Bootcamp",
+      instructor: "Sarah Johnson",
+      price: 89,
+      image: "/web-development-course.png",
+    },
+    {
+      id: 3,
+      title: "Data Science & Machine Learning",
+      instructor: "Dr. Michael Chen",
+      price: 129,
+      image: "/data-science-course.png",
+    },
+  ]
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0)
+  const taxRate = 0.08 // 8% tax
+  const tax = subtotal * taxRate
+  const total = subtotal + tax
+
+  const handlePlaceOrder = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log("Placing order...")
+    // Implement order placement logic here
+    alert("Order placed successfully! (This is a demo)")
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -96,63 +118,67 @@ export default function CheckoutPage() {
         </div>
       </nav>
 
-      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-slate-900 mb-6">Checkout</h1>
-        <div className="grid md:grid-cols-2 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">Checkout</h1>
+
+        <div className="grid lg:grid-cols-3 gap-8">
           {/* Order Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <img src={course.image || "/placeholder.svg"} alt={course.title} width={80} height={80} className="rounded-md object-cover" />
-                <div>
-                  <h3 className="font-semibold text-slate-900">{course.title}</h3>
-                  <p className="text-sm text-slate-600">by {course.instructor}</p>
+          <div className="lg:col-span-1 order-last lg:order-first">
+            <Card className="p-6 shadow-md sticky top-24">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">Order Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 space-y-4">
+                <div className="space-y-3">
+                  {cartItems.map(item => (
+                    <div key={item.id} className="flex items-center space-x-4">
+                      <Image
+                        src={item.image || "/placeholder.svg"}
+                        alt={item.title}
+                        width={64}
+                        height={64}
+                        className="rounded-md object-cover"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-medium text-slate-900">{item.title}</h3>
+                        <p className="text-sm text-slate-600">by {item.instructor}</p>
+                      </div>
+                      <span className="font-semibold text-slate-900">${item.price}</span>
+                    </div>
+                  ))}
                 </div>
-                <span className="ml-auto text-lg font-bold text-slate-900">${course.price}</span>
-              </div>
-              <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between text-slate-700">
-                  <span>Subtotal</span>
-                  <span>${course.price.toFixed(2)}</span>
+                <div className="border-t border-slate-200 pt-4 space-y-2">
+                  <div className="flex justify-between text-slate-700">
+                    <span>Subtotal</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-700">
+                    <span>Tax ({taxRate * 100}%)</span>
+                    <span>${tax.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-xl text-slate-900 pt-2">
+                    <span>Total</span>
+                    <span>${total.toFixed(2)}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-slate-700">
-                  <span>Tax (0%)</span>
-                  <span>$0.00</span>
-                </div>
-                <div className="flex justify-between font-bold text-xl text-slate-900">
-                  <span>Total</span>
-                  <span>${course.price.toFixed(2)}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                <Button
+                  onClick={handlePlaceOrder}
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-lg"
+                >
+                  Place Order
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Payment Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Details</CardTitle>
-              <CardDescription>Select your preferred payment method</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="payment-method">Payment Method</Label>
-                <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <SelectTrigger id="payment-method">
-                    <SelectValue placeholder="Select a payment method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="credit-card">Credit Card</SelectItem>
-                    <SelectItem value="paypal">PayPal</SelectItem>
-                    <SelectItem value="wallet">Crypto Wallet</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {paymentMethod === "credit-card" && (
-                <div className="space-y-4">
+          {/* Payment and Billing Details */}
+          <div className="lg:col-span-2 space-y-8">
+            <Card className="p-6 shadow-md">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">Payment Information</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <form className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="card-number">Card Number</Label>
                     <Input id="card-number" placeholder="XXXX XXXX XXXX XXXX" required />
@@ -171,29 +197,68 @@ export default function CheckoutPage() {
                     <Label htmlFor="card-name">Name on Card</Label>
                     <Input id="card-name" placeholder="John Doe" required />
                   </div>
-                </div>
-              )}
+                </form>
+              </CardContent>
+            </Card>
 
-              {paymentMethod === "paypal" && (
-                <div className="text-center py-4">
-                  <Button className="w-full bg-blue-700 hover:bg-blue-800">Pay with PayPal</Button>
-                </div>
-              )}
-
-              {paymentMethod === "wallet" && (
-                <div className="text-center py-4">
-                  <WalletButton />
-                  <p className="text-sm text-slate-600 mt-2">Connect your crypto wallet to complete the payment.</p>
-                </div>
-              )}
-
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                Complete Purchase
-              </Button>
-            </CardContent>
-          </Card>
+            <Card className="p-6 shadow-md">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">Billing Address</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <form className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="address1">Address Line 1</Label>
+                    <Input id="address1" placeholder="123 Main St" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address2">Address Line 2 (Optional)</Label>
+                    <Input id="address2" placeholder="Apt 4B" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input id="city" placeholder="New York" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Select>
+                        <SelectTrigger id="state">
+                          <SelectValue placeholder="Select State" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="NY">New York</SelectItem>
+                          <SelectItem value="CA">California</SelectItem>
+                          <SelectItem value="TX">Texas</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="zip">Zip Code</Label>
+                      <Input id="zip" placeholder="10001" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country">Country</Label>
+                      <Select>
+                        <SelectTrigger id="country">
+                          <SelectValue placeholder="Select Country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="US">United States</SelectItem>
+                          <SelectItem value="CA">Canada</SelectItem>
+                          <SelectItem value="GB">United Kingdom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">

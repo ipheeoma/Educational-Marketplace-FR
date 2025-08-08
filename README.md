@@ -1,30 +1,55 @@
-# Educational Marketplace frontend
+# EduMarket - Online Educational Marketplace
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+This is a modern, responsive frontend for an online educational marketplace, built with Next.js, React, and Tailwind CSS. It features:
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/obijuruify-gmailcoms-projects/v0-educational-marketplace-frontend)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/QlMnO7miSil)
+-   **Landing Page**: Engaging hero section, featured courses, categories, testimonials, and a call-to-action.
+-   **Course Listing Page**: Browse and filter courses by search query, category, level, price range, and sort by various criteria.
+-   **Course Detail Page**: Detailed view of a single course.
+-   **User Authentication**: Sign In and Sign Up pages.
+-   **Instructor Dashboard**: A placeholder for future instructor functionalities.
+-   **Wallet Integration**: Connects with MetaMask, WalletConnect, and Phantom.
+-   **About Page**: Information about the platform.
 
-## Overview
+## Getting Started
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+1.  **Clone the repository:**
+    \`\`\`bash
+    git clone <repository-url>
+    cd educational-marketplace-frontend
+    \`\`\`
+2.  **Install dependencies:**
+    \`\`\`bash
+    npm install
+    # or
+    pnpm install
+    # or
+    yarn install
+    \`\`\`
+3.  **Run the development server:**
+    \`\`\`bash
+    npm run dev
+    # or
+    pnpm dev
+    # or
+    yarn dev
+    \`\`\`
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Deployment
+## Project Structure
 
-Your project is live at:
+-   `app/`: Next.js App Router pages and layouts.
+-   `components/`: Reusable React components, including Shadcn UI components and custom components like `WalletButton`.
+-   `lib/`: Utility functions, such as `wallet.ts` for Web3 interactions and `utils.ts` for general utilities.
+-   `hooks/`: Custom React hooks, like `useWallet.ts`.
+-   `public/`: Static assets like images.
+-   `styles/`: Global CSS.
 
-**[https://vercel.com/obijuruify-gmailcoms-projects/v0-educational-marketplace-frontend](https://vercel.com/obijuruify-gmailcoms-projects/v0-educational-marketplace-frontend)**
+## Technologies Used
 
-## Build your app
-
-Continue building your app on:
-
-**[https://v0.dev/chat/projects/QlMnO7miSil](https://v0.dev/chat/projects/QlMnO7miSil)**
-
-## How It Works
-
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+-   [Next.js](https://nextjs.org/)
+-   [React](https://react.dev/)
+-   [Tailwind CSS](https://tailwindcss.com/)
+-   [Shadcn UI](https://ui.shadcn.com/)
+-   [Lucide React](https://lucide.dev/icons/) for icons
+-   [Geist Fonts](https://vercel.com/font)
+-   [Ethers.js](https://docs.ethers.org/v6/) for Ethereum interactions
