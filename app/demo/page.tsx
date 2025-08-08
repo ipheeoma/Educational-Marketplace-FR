@@ -1,5 +1,4 @@
 'use client'
-
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { BookOpen, Menu, X } from 'lucide-react'
@@ -10,7 +9,7 @@ export default function DemoPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -84,13 +83,13 @@ export default function DemoPage() {
         </div>
       </nav>
 
-      <main className="flex-1 flex items-center justify-center py-12 px-4">
-        <div className="text-center space-y-6">
-          <h1 className="text-4xl font-bold text-slate-900">Demo Page</h1>
-          <p className="text-lg text-slate-600">This is a placeholder for your interactive demo content.</p>
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">Demo Page</h1>
+          <p className="text-xl text-slate-600 mb-8">This is a placeholder for a demo page.</p>
           <Link href="/">
             <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-              Go to Homepage
+              Go to Home
             </Button>
           </Link>
         </div>

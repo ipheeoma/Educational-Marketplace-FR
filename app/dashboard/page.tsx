@@ -1,49 +1,51 @@
 'use client'
-
+import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { BookOpen, Menu, X, GraduationCap, Clock, CheckCircle } from 'lucide-react'
-import { useState } from "react"
+import { BookOpen, Menu, X, Star, Clock, Users } from 'lucide-react'
 import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function DashboardPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  // Dummy data for dashboard
   const enrolledCourses = [
     {
       id: 1,
-      title: "Web Development Fundamentals",
+      title: "Complete Web Development Bootcamp",
+      instructor: "Sarah Johnson",
       progress: 75,
-      lastAccessed: "2 days ago",
-      imageUrl: "/web-development-course.png",
+      image: "/web-development-course.png",
+      rating: 4.9,
+      students: 12500,
+      duration: "42 hours",
     },
     {
       id: 2,
-      title: "Python for Data Analysis",
+      title: "Data Science & Machine Learning",
+      instructor: "Dr. Michael Chen",
       progress: 40,
-      lastAccessed: "5 days ago",
-      imageUrl: "/python-data-analysis-course.png",
+      image: "/data-science-course.png",
+      rating: 4.8,
+      students: 8900,
+      duration: "45 hours",
     },
     {
       id: 3,
-      title: "UI/UX Design Principles",
+      title: "Advanced React & Redux Masterclass",
+      instructor: "Mike Wilson",
       progress: 90,
-      lastAccessed: "1 week ago",
-      imageUrl: "/ui-ux-design-course.png",
+      image: "/react-redux-course.png",
+      rating: 4.8,
+      students: 8900,
+      duration: "38 hours",
     },
   ]
 
-  const achievements = [
-    { id: 1, title: "Course Completion Master", description: "Completed 5 courses", icon: <GraduationCap className="w-6 h-6 text-blue-600" /> },
-    { id: 2, title: "Active Learner", description: "Logged in 7 consecutive days", icon: <Clock className="w-6 h-6 text-green-600" /> },
-    { id: 3, title: "Top Reviewer", description: "Wrote 10 course reviews", icon: <CheckCircle className="w-6 h-6 text-purple-600" /> },
-  ]
-
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -117,54 +119,87 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold text-slate-900 mb-8">Dashboard</h1>
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">My Dashboard</h1>
 
-          {/* Enrolled Courses */}
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">My Enrolled Courses</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {enrolledCourses.map(course => (
-                <Card key={course.id} className="overflow-hidden">
-                  <img src={course.imageUrl || "/placeholder.svg"} alt={course.title} className="w-full h-40 object-cover" />
-                  <CardContent className="p-4">
-                    <CardTitle className="text-xl font-semibold mb-2">{course.title}</CardTitle>
-                    <div className="flex items-center justify-between text-sm text-slate-600 mb-3">
-                      <span>Progress: {course.progress}%</span>
-                      <span>Last accessed: {course.lastAccessed}</span>
-                    </div>
-                    <Progress value={course.progress} className="h-2 mb-4" />
-                    <Link href={`/course/${course.id}`}>
-                      <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                        Continue Learning
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
+        <div className="grid md:grid-cols-3 gap-8 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-slate-900">Total Enrolled Courses</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-5xl font-bold text-blue-600">12</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-slate-900">Courses Completed</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-5xl font-bold text-green-600">8</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-slate-900">Certificates Earned</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-5xl font-bold text-purple-600">5</p>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Achievements */}
-          <section>
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">My Achievements</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {achievements.map(achievement => (
-                <Card key={achievement.id}>
-                  <CardContent className="flex items-center p-4 space-x-4">
-                    <div className="flex-shrink-0">
-                      {achievement.icon}
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold">{achievement.title}</CardTitle>
-                      <p className="text-sm text-slate-600">{achievement.description}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
+        <h2 className="text-3xl font-bold text-slate-900 mb-6">My Learning</h2>
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {enrolledCourses.map((course) => (
+            <Card key={course.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
+              <div className="relative overflow-hidden rounded-t-lg">
+                <Image
+                  src={course.image || "/placeholder.svg"}
+                  alt={course.title}
+                  width={300}
+                  height={200}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-6 space-y-4">
+                <div className="space-y-2">
+                  <Link href={`/course/${course.id}`} className="hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg font-semibold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                      {course.title}
+                    </h3>
+                  </Link>
+                  <p className="text-slate-600">by {course.instructor}</p>
+                </div>
+                <div className="flex items-center space-x-4 text-sm text-slate-500">
+                  <div className="flex items-center space-x-1">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <span>{course.rating}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Users className="w-4 h-4" />
+                    <span>{course.students.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Clock className="w-4 h-4" />
+                    <span>{course.duration}</span>
+                  </div>
+                </div>
+                <div className="pt-4 space-y-2">
+                  <div className="flex justify-between text-sm font-medium text-slate-700">
+                    <span>Progress</span>
+                    <span>{course.progress}%</span>
+                  </div>
+                  <Progress value={course.progress} className="w-full" />
+                </div>
+                <Link href={`/course/${course.id}`}>
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                    Continue Learning
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </main>
 

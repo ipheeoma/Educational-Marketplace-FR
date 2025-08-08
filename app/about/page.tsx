@@ -1,16 +1,17 @@
 'use client'
-
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { BookOpen, Menu, X } from 'lucide-react'
 import { useState } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { BookOpen, Menu, X } from 'lucide-react'
 import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function AboutPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -84,35 +85,122 @@ export default function AboutPage() {
         </div>
       </nav>
 
-      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-6">About EduMarket</h1>
-          <p className="text-lg text-slate-700 mb-6">
-            EduMarket is a leading online platform dedicated to providing high-quality educational content and fostering a global learning community. Our mission is to empower individuals with the knowledge and skills they need to succeed in a rapidly evolving world.
-          </p>
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">Our Vision</h2>
-          <p className="text-slate-700 mb-6">
-            We envision a world where education is accessible to everyone, regardless of their geographical location or socioeconomic background. By leveraging technology, we aim to break down barriers to learning and create opportunities for personal and professional growth.
-          </p>
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">What We Offer</h2>
-          <ul className="list-disc list-inside text-slate-700 space-y-2 mb-6">
-            <li>A diverse catalog of courses across various disciplines, from technology to arts.</li>
-            <li>Expert instructors with real-world experience and a passion for teaching.</li>
-            <li>Interactive learning experiences, including quizzes, projects, and discussions.</li>
-            <li>Flexible learning paths that cater to different learning styles and schedules.</li>
-            <li>A supportive community where learners can connect, collaborate, and grow.</li>
-          </ul>
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">Our Commitment</h2>
-          <p className="text-slate-700 mb-6">
-            At EduMarket, we are committed to excellence in education. We continuously strive to update our content, improve our platform, and provide unparalleled support to our learners and instructors. Your success is our success.
-          </p>
-          <div className="text-center">
-            <Link href="/courses">
-              <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                Explore Courses
-              </Button>
-            </Link>
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">About EduMarket</h1>
+
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-12">
+          <div>
+            <h2 className="text-3xl font-semibold text-slate-900 mb-4">Our Mission</h2>
+            <p className="text-lg text-slate-700 leading-relaxed">
+              At EduMarket, our mission is to democratize education by providing high-quality, accessible, and affordable learning experiences to everyone, everywhere. We believe that knowledge is the key to unlocking potential, and we are committed to empowering individuals to achieve their personal and professional goals through continuous learning.
+            </p>
           </div>
+          <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden shadow-lg">
+            <Image
+              src="/modern-online-learning.png"
+              alt="Modern Online Learning"
+              layout="fill"
+              objectFit="cover"
+            />
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-12">
+          <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden shadow-lg">
+            <Image
+              src="/diverse-user-avatars.png"
+              alt="Diverse User Avatars"
+              layout="fill"
+              objectFit="cover"
+            />
+          </div>
+          <div>
+            <h2 className="text-3xl font-semibold text-slate-900 mb-4">Our Values</h2>
+            <ul className="space-y-4 text-lg text-slate-700 leading-relaxed list-disc pl-5">
+              <li>
+                <span className="font-semibold">Accessibility:</span> Education should be available to all, regardless of their background or location.
+              </li>
+              <li>
+                <span className="font-semibold">Quality:</span> We partner with expert instructors to deliver engaging and effective content.
+              </li>
+              <li>
+                <span className="font-semibold">Innovation:</span> We continuously explore new technologies and teaching methods to enhance the learning journey.
+              </li>
+              <li>
+                <span className="font-semibold">Community:</span> We foster a supportive environment where learners can connect, collaborate, and grow together.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-semibold text-slate-900 mb-4">Meet Our Team</h2>
+          <p className="text-lg text-slate-700 max-w-3xl mx-auto">
+            Our diverse team of educators, technologists, and designers are passionate about creating the best possible learning platform.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          <Card className="text-center">
+            <CardContent className="p-6 flex flex-col items-center">
+              <Image
+                src="/professional-male-headshot.png"
+                alt="John Doe"
+                width={120}
+                height={120}
+                className="rounded-full object-cover mb-4"
+              />
+              <h3 className="text-xl font-semibold text-slate-900">John Doe</h3>
+              <p className="text-blue-600 font-medium">CEO & Founder</p>
+              <p className="text-slate-600 mt-2">
+                Visionary leader passionate about transforming education through technology.
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="text-center">
+            <CardContent className="p-6 flex flex-col items-center">
+              <Image
+                src="/professional-female-headshot.png"
+                alt="Jane Smith"
+                width={120}
+                height={120}
+                className="rounded-full object-cover mb-4"
+              />
+              <h3 className="text-xl font-semibold text-slate-900">Jane Smith</h3>
+              <p className="text-blue-600 font-medium">Head of Curriculum</p>
+              <p className="text-slate-600 mt-2">
+                Experienced educator dedicated to crafting engaging and effective course content.
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="text-center">
+            <CardContent className="p-6 flex flex-col items-center">
+              <Image
+                src="/professional-asian-male-headshot.png"
+                alt="David Lee"
+                width={120}
+                height={120}
+                className="rounded-full object-cover mb-4"
+              />
+              <h3 className="text-xl font-semibold text-slate-900">David Lee</h3>
+              <p className="text-blue-600 font-medium">CTO</p>
+              <p className="text-slate-600 mt-2">
+                Innovator building scalable and robust platforms for seamless learning experiences.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="text-center">
+          <h2 className="text-3xl font-semibold text-slate-900 mb-4">Join Our Community</h2>
+          <p className="text-lg text-slate-700 max-w-3xl mx-auto mb-6">
+            Become a part of our growing community of learners and educators. Connect with peers, share insights, and get support.
+          </p>
+          <Link href="/auth/signup">
+            <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-lg px-8 py-3">
+              Sign Up Today
+            </Button>
+          </Link>
         </div>
       </main>
 

@@ -1,5 +1,5 @@
 'use client'
-
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -7,14 +7,22 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { BookOpen, Menu, X } from 'lucide-react'
-import { useState } from "react"
 import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function CheckoutPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState("credit-card")
+
+  const course = {
+    id: 1,
+    title: "Complete Web Development Bootcamp",
+    instructor: "Sarah Johnson",
+    price: 89,
+    image: "/web-development-course.png",
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,86 +96,103 @@ export default function CheckoutPage() {
         </div>
       </nav>
 
-      <main className="flex-1 flex items-center justify-center py-12 px-4">
-        <Card className="w-full max-w-2xl">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">Checkout</CardTitle>
-            <CardDescription>Complete your purchase by filling out the details below.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Billing Information</h3>
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-3xl font-bold text-slate-900 mb-6">Checkout</h1>
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Order Summary */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Order Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <img src={course.image || "/placeholder.svg"} alt={course.title} width={80} height={80} className="rounded-md object-cover" />
                 <div>
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input id="fullName" type="text" placeholder="John Doe" required />
+                  <h3 className="font-semibold text-slate-900">{course.title}</h3>
+                  <p className="text-sm text-slate-600">by {course.instructor}</p>
                 </div>
-                <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Input id="address" type="text" placeholder="123 Main St" required />
+                <span className="ml-auto text-lg font-bold text-slate-900">${course.price}</span>
+              </div>
+              <div className="border-t pt-4 space-y-2">
+                <div className="flex justify-between text-slate-700">
+                  <span>Subtotal</span>
+                  <span>${course.price.toFixed(2)}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input id="city" type="text" placeholder="New York" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="zip">ZIP Code</Label>
-                    <Input id="zip" type="text" placeholder="10001" required />
-                  </div>
+                <div className="flex justify-between text-slate-700">
+                  <span>Tax (0%)</span>
+                  <span>$0.00</span>
                 </div>
-                <div>
-                  <Label htmlFor="country">Country</Label>
-                  <Select>
-                    <SelectTrigger id="country">
-                      <SelectValue placeholder="Select a country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="usa">United States</SelectItem>
-                      <SelectItem value="canada">Canada</SelectItem>
-                      <SelectItem value="uk">United Kingdom</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex justify-between font-bold text-xl text-slate-900">
+                  <span>Total</span>
+                  <span>${course.price.toFixed(2)}</span>
                 </div>
               </div>
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Payment Information</h3>
-                <div>
-                  <Label htmlFor="cardNumber">Card Number</Label>
-                  <Input id="cardNumber" type="text" placeholder="**** **** **** ****" required />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="expiryDate">Expiry Date</Label>
-                    <Input id="expiryDate" type="text" placeholder="MM/YY" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="cvv">CVV</Label>
-                    <Input id="cvv" type="text" placeholder="123" required />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="font-medium">Order Summary</h4>
-                  <div className="flex justify-between">
-                    <span>Course Price:</span>
-                    <span>$99.00</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Tax:</span>
-                    <span>$5.00</span>
-                  </div>
-                  <div className="flex justify-between font-bold">
-                    <span>Total:</span>
-                    <span>$104.00</span>
-                  </div>
-                </div>
-                <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                  Place Order
-                </Button>
+            </CardContent>
+          </Card>
+
+          {/* Payment Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Details</CardTitle>
+              <CardDescription>Select your preferred payment method</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="payment-method">Payment Method</Label>
+                <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                  <SelectTrigger id="payment-method">
+                    <SelectValue placeholder="Select a payment method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="credit-card">Credit Card</SelectItem>
+                    <SelectItem value="paypal">PayPal</SelectItem>
+                    <SelectItem value="wallet">Crypto Wallet</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </form>
-          </CardContent>
-        </Card>
+
+              {paymentMethod === "credit-card" && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="card-number">Card Number</Label>
+                    <Input id="card-number" placeholder="XXXX XXXX XXXX XXXX" required />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="expiry-date">Expiry Date</Label>
+                      <Input id="expiry-date" placeholder="MM/YY" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="cvv">CVV</Label>
+                      <Input id="cvv" placeholder="XXX" required />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="card-name">Name on Card</Label>
+                    <Input id="card-name" placeholder="John Doe" required />
+                  </div>
+                </div>
+              )}
+
+              {paymentMethod === "paypal" && (
+                <div className="text-center py-4">
+                  <Button className="w-full bg-blue-700 hover:bg-blue-800">Pay with PayPal</Button>
+                </div>
+              )}
+
+              {paymentMethod === "wallet" && (
+                <div className="text-center py-4">
+                  <WalletButton />
+                  <p className="text-sm text-slate-600 mt-2">Connect your crypto wallet to complete the payment.</p>
+                </div>
+              )}
+
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                Complete Purchase
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </main>
 
       {/* Footer */}
