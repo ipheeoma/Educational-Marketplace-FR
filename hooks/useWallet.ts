@@ -1,145 +1,157 @@
 import { useState, useEffect, useCallback } from 'react';
-import { connectMetaMask, getBalance, shortenAddress, switchNetwork, SUPPORTED_NETWORKS, NetworkId, NetworkInfo } from '@/lib/wallet';
+import { connectMetamask, disconnectMetamask, getMetamaskBalance, switchMetamaskNetwork, connectPhantom, disconnectPhantom } from '@/lib/wallet';
+import { ethers } from 'ethers';
 
 interface WalletState {
   address: string | null;
-  chainId: NetworkId | null;
   balance: string | null;
+  network: string | null;
   isConnected: boolean;
+  provider: ethers.BrowserProvider | null;
   error: string | null;
-  networkInfo: NetworkInfo | null;
 }
 
-const defaultState: WalletState = {
-  address: null,
-  chainId: null,
-  balance: null,
-  isConnected: false,
-  error: null,
-  networkInfo: null,
-};
-
-export const useWallet = () => {
-  const [wallet, setWallet] = useState<WalletState>(() => {
-    // Initialize from session storage if available
-    if (typeof window !== 'undefined') {
-      const storedAddress = sessionStorage.getItem('walletAddress');
-      const storedChainId = sessionStorage.getItem('walletChainId');
-      if (storedAddress && storedChainId) {
-        const chainIdNum = Number(storedChainId);
-        const networkInfo = SUPPORTED_NETWORKS[chainIdNum as NetworkId];
-        return {
-          address: storedAddress,
-          chainId: chainIdNum as NetworkId,
-          balance: null, // Will be fetched on mount
-          isConnected: true,
-          error: null,
-          networkInfo: networkInfo || null,
-        };
-      }
-    }
-    return defaultState;
+export function useWallet() {
+  const [wallet, setWallet] = useState<WalletState>({
+    address: null,
+    balance: null,
+    network: null,
+    isConnected: false,
+    provider: null,
+    error: null,
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const updateWalletState = useCallback((updates: Partial<WalletState>) => {
-    setWallet(prevState => ({ ...prevState, ...updates }));
+  const resetWalletState = useCallback(() => {
+    setWallet({
+      address: null,
+      balance: null,
+      network: null,
+      isConnected: false,
+      provider: null,
+      error: null,
+    });
   }, []);
 
-  const connectWallet = useCallback(async () => {
-    updateWalletState({ error: null });
+  const connectWallet = useCallback(async (walletType: 'metamask' | 'phantom') => {
+    setIsLoading(true);
+    setWallet((prev) => ({ ...prev, error: null }));
     try {
-      const { address, chainId } = await connectMetaMask();
-      const networkInfo = SUPPORTED_NETWORKS[chainId as NetworkId];
-      if (!networkInfo) {
-        throw new Error(`Unsupported network detected: ${chainId}. Please switch to a supported network like Polygon.`);
+      if (walletType === 'metamask') {
+        const { address, balance, network, provider } = await connectMetamask();
+        setWallet({
+          address,
+          balance,
+          network,
+          isConnected: true,
+          provider,
+          error: null,
+        });
+      } else if (walletType === 'phantom') {
+        const { address, balance, network } = await connectPhantom();
+        setWallet({
+          address,
+          balance,
+          network,
+          isConnected: true,
+          provider: null, // Phantom doesn't use ethers.BrowserProvider directly
+          error: null,
+        });
       }
-      const fetchedBalance = await getBalance(address, chainId);
-
-      sessionStorage.setItem('walletAddress', address);
-      sessionStorage.setItem('walletChainId', String(chainId));
-
-      updateWalletState({
-        address,
-        chainId,
-        balance: fetchedBalance,
-        isConnected: true,
-        networkInfo,
-      });
     } catch (err: any) {
-      console.error("Failed to connect wallet:", err);
-      updateWalletState({ error: err.message || "Failed to connect wallet." });
-      disconnectWallet(); // Ensure state is reset on error
+      setWallet((prev) => ({ ...prev, error: err.message }));
+      console.error("Connection error:", err);
+    } finally {
+      setIsLoading(false);
     }
-  }, [updateWalletState]);
+  }, []);
 
-  const disconnectWallet = useCallback(() => {
-    sessionStorage.removeItem('walletAddress');
-    sessionStorage.removeItem('walletChainId');
-    updateWalletState(defaultState);
-  }, [updateWalletState]);
+  const disconnectWallet = useCallback(async () => {
+    setIsLoading(true);
+    setWallet((prev) => ({ ...prev, error: null }));
+    try {
+      if (wallet.provider) {
+        await disconnectMetamask(wallet.provider);
+      } else if (wallet.network === 'Solana') { // Assuming 'Solana' for Phantom
+        await disconnectPhantom();
+      }
+      resetWalletState();
+    } catch (err: any) {
+      setWallet((prev) => ({ ...prev, error: err.message }));
+      console.error("Disconnection error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [wallet.provider, wallet.network, resetWalletState]);
 
-  const fetchBalance = useCallback(async () => {
-    if (wallet.address && wallet.chainId) {
+  const refreshBalance = useCallback(async () => {
+    if (wallet.isConnected && wallet.address && wallet.provider) {
       try {
-        const fetchedBalance = await getBalance(wallet.address, wallet.chainId);
-        updateWalletState({ balance: fetchedBalance });
+        const newBalance = await getMetamaskBalance(wallet.provider, wallet.address);
+        setWallet((prev) => ({ ...prev, balance: newBalance }));
       } catch (err: any) {
-        console.error("Failed to fetch balance:", err);
-        updateWalletState({ error: err.message || "Failed to fetch balance." });
+        setWallet((prev) => ({ ...prev, error: err.message }));
+        console.error("Balance refresh error:", err);
       }
     }
-  }, [wallet.address, wallet.chainId, updateWalletState]);
+  }, [wallet.isConnected, wallet.address, wallet.provider]);
 
-  const handleAccountsChanged = useCallback((accounts: string[]) => {
-    if (accounts.length === 0) {
-      disconnectWallet();
-    } else {
-      updateWalletState({ address: accounts[0], error: null });
-      fetchBalance();
+  const switchNetwork = useCallback(async (chainId: string) => {
+    if (wallet.isConnected && wallet.provider) {
+      setIsLoading(true);
+      setWallet((prev) => ({ ...prev, error: null }));
+      try {
+        const newNetworkName = await switchMetamaskNetwork(wallet.provider, chainId);
+        setWallet((prev) => ({ ...prev, network: newNetworkName }));
+      } catch (err: any) {
+        setWallet((prev) => ({ ...prev, error: err.message }));
+        console.error("Network switch error:", err);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  }, [disconnectWallet, updateWalletState, fetchBalance]);
+  }, [wallet.isConnected, wallet.provider]);
 
-  const handleChainChanged = useCallback((chainIdHex: string) => {
-    const newChainId = Number(chainIdHex);
-    const networkInfo = SUPPORTED_NETWORKS[newChainId as NetworkId];
-    if (networkInfo) {
-      updateWalletState({ chainId: newChainId as NetworkId, networkInfo, error: null });
-      fetchBalance();
-    } else {
-      updateWalletState({
-        chainId: newChainId as NetworkId,
-        networkInfo: null,
-        error: `Unsupported network: ${newChainId}. Please switch to a supported network.`,
-      });
-      // Optionally, prompt to switch or disconnect
-    }
-  }, [updateWalletState, fetchBalance]);
-
+  // Listen for Metamask account/network changes
   useEffect(() => {
-    if (typeof window.ethereum !== 'undefined') {
-      // Initial fetch of balance if already connected via session storage
-      if (wallet.isConnected && wallet.address && wallet.chainId && !wallet.balance) {
-        fetchBalance();
-      }
+    if (typeof window.ethereum !== 'undefined' && wallet.isConnected && wallet.provider) {
+      const handleAccountsChanged = (accounts: string[]) => {
+        if (accounts.length === 0) {
+          // Metamask is locked or the user has disconnected all accounts
+          resetWalletState();
+        } else if (wallet.address !== accounts[0]) {
+          // Account changed
+          setWallet((prev) => ({ ...prev, address: accounts[0] }));
+          refreshBalance();
+        }
+      };
+
+      const handleChainChanged = (chainId: string) => {
+        // Network changed
+        if (wallet.provider) {
+          wallet.provider.getNetwork().then(network => {
+            setWallet((prev) => ({ ...prev, network: network.name }));
+            refreshBalance();
+          });
+        }
+      };
 
       window.ethereum.on('accountsChanged', handleAccountsChanged);
       window.ethereum.on('chainChanged', handleChainChanged);
 
       return () => {
-        if (window.ethereum.removeListener) {
-          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-          window.ethereum.removeListener('chainChanged', handleChainChanged);
-        }
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
       };
     }
-  }, [wallet.isConnected, wallet.address, wallet.chainId, wallet.balance, fetchBalance, handleAccountsChanged, handleChainChanged]);
+  }, [wallet.isConnected, wallet.address, wallet.provider, refreshBalance, resetWalletState]);
 
   return {
-    ...wallet,
-    shortenedAddress: wallet.address ? shortenAddress(wallet.address) : null,
+    wallet,
+    isLoading,
     connectWallet,
     disconnectWallet,
+    refreshBalance,
     switchNetwork,
-    fetchBalance,
   };
-};
+}

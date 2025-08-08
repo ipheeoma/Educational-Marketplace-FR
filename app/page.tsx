@@ -454,7 +454,7 @@ export default function HomePage() {
               <div className="space-y-2">
                 <Link href="/courses" className="block hover:text-white transition-colors">Browse Courses</Link>
                 <Link href="/courses?view=categories" className="block hover:text-white transition-colors">Categories</Link>
-                <Link href="/about" className="block hover:text-white transition-colors">About</Link>
+                <Link href="/about" className className="block hover:text-white transition-colors">About</Link>
                 <Link href="/pricing" className="block hover:text-white transition-colors">Pricing</Link>
               </div>
             </div>
