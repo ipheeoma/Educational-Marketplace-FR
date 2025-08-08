@@ -1,210 +1,137 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Wallet, ChevronDown, Copy, ExternalLink, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 import { useWallet } from '@/hooks/useWallet'
-import { shortenAddress, SUPPORTED_NETWORKS, DEFAULT_NETWORK } from '@/lib/wallet'
+import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Wallet, Plug, XCircle, CheckCircle, Copy, ExternalLink, Network } from 'lucide-react'
+import { useState } from 'react'
+import { SUPPORTED_NETWORKS } from '@/lib/wallet'
 
 export function WalletButton() {
-  const { wallet, isConnecting, error, connect, disconnect, switchNetwork, availableProviders } = useWallet()
-  const [showWalletModal, setShowWalletModal] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const { address, shortenedAddress, balance, isConnected, error, networkInfo, connectWallet, disconnectWallet, switchNetwork } = useWallet()
+  const [isNetworkDialogOpen, setIsNetworkDialogOpen] = useState(false)
 
-  const copyAddress = async () => {
-    if (wallet?.address) {
-      await navigator.clipboard.writeText(wallet.address)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+  const handleCopyAddress = () => {
+    if (address) {
+      navigator.clipboard.writeText(address)
+      // Optionally, show a toast notification
+      console.log('Address copied to clipboard!')
     }
   }
 
-  const openBlockExplorer = () => {
-    if (wallet?.address && wallet?.chainId) {
-      const network = SUPPORTED_NETWORKS[wallet.chainId as keyof typeof SUPPORTED_NETWORKS]
-      if (network) {
-        window.open(`${network.blockExplorer}address/${wallet.address}`, '_blank')
-      }
+  const handleSwitchNetwork = async (chainId: number) => {
+    try {
+      await switchNetwork(chainId)
+      setIsNetworkDialogOpen(false)
+    } catch (err) {
+      console.error('Failed to switch network:', err)
+      // Error message is already handled by useWallet hook
     }
-  }
-
-  const handleConnect = async (providerName: string) => {
-    const provider = availableProviders.find(p => p.name === providerName)
-    if (provider) {
-      await connect(provider)
-      setShowWalletModal(false)
-    }
-  }
-
-  const isNetworkSupported = wallet?.chainId && wallet.chainId in SUPPORTED_NETWORKS
-
-  if (wallet) {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="flex items-center space-x-2">
-            <Wallet className="w-4 h-4" />
-            <span className="hidden sm:inline">{shortenAddress(wallet.address)}</span>
-            <div className="flex items-center space-x-1">
-              {isNetworkSupported ? (
-                <div className="w-2 h-2 bg-green-500 rounded-full" />
-              ) : (
-                <div className="w-2 h-2 bg-red-500 rounded-full" />
-              )}
-              <ChevronDown className="w-3 h-3" />
-            </div>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64">
-          <div className="p-3 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Connected Wallet</span>
-              {isNetworkSupported ? (
-                <Badge variant="secondary" className="text-green-600 bg-green-50">
-                  <CheckCircle className="w-3 h-3 mr-1" />
-                  {wallet.networkName}
-                </Badge>
-              ) : (
-                <Badge variant="destructive">
-                  <AlertCircle className="w-3 h-3 mr-1" />
-                  Unsupported
-                </Badge>
-              )}
-            </div>
-            <div className="text-xs text-muted-foreground font-mono">
-              {wallet.address}
-            </div>
-            {wallet.balance && (
-              <div className="text-sm">
-                Balance: {wallet.balance} {SUPPORTED_NETWORKS[wallet.chainId as keyof typeof SUPPORTED_NETWORKS]?.symbol || 'ETH'}
-              </div>
-            )}
-          </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={copyAddress} className="cursor-pointer">
-            <Copy className="w-4 h-4 mr-2" />
-            {copied ? 'Copied!' : 'Copy Address'}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={openBlockExplorer} className="cursor-pointer">
-            <ExternalLink className="w-4 h-4 mr-2" />
-            View on Explorer
-          </DropdownMenuItem>
-          {!isNetworkSupported && (
-            <DropdownMenuItem 
-              onClick={() => switchNetwork(DEFAULT_NETWORK)} 
-              className="cursor-pointer text-blue-600"
-            >
-              <AlertCircle className="w-4 h-4 mr-2" />
-              Switch to Polygon
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={disconnect} className="cursor-pointer text-red-600">
-            <Wallet className="w-4 h-4 mr-2" />
-            Disconnect
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    )
   }
 
   return (
-    <Dialog open={showWalletModal} onOpenChange={setShowWalletModal}>
-      <DialogTrigger asChild>
-        <Button variant="outline" disabled={isConnecting}>
-          {isConnecting ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Connecting...
-            </>
-          ) : (
-            <>
-              <Wallet className="w-4 h-4 mr-2" />
-              Connect Wallet
-            </>
-          )}
+    <>
+      {isConnected ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="flex items-center gap-2">
+              <Wallet className="w-4 h-4" />
+              {shortenedAddress}
+              {networkInfo && (
+                <span className={`ml-2 px-2 py-1 text-xs rounded-full ${networkInfo.name === 'Polygon Mainnet' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {networkInfo.name}
+                </span>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuLabel>
+              <div className="flex items-center gap-2">
+                <Wallet className="w-4 h-4" />
+                <span>My Wallet</span>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="flex items-center justify-between">
+              <span>Address:</span>
+              <span className="font-mono text-sm">{shortenedAddress}</span>
+              <Button variant="ghost" size="icon" onClick={handleCopyAddress} className="ml-2 h-6 w-6">
+                <Copy className="w-3 h-3" />
+              </Button>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <span>Balance:</span>
+              <span className="font-semibold ml-auto">{balance ? `${parseFloat(balance).toFixed(4)} ${networkInfo?.currency || ''}` : 'Loading...'}</span>
+            </DropdownMenuItem>
+            {networkInfo && (
+              <DropdownMenuItem>
+                <span>Network:</span>
+                <span className={`ml-auto flex items-center gap-1 ${networkInfo.name === 'Polygon Mainnet' ? 'text-green-600' : 'text-red-600'}`}>
+                  <Network className="w-3 h-3" />
+                  {networkInfo.name}
+                </span>
+              </DropdownMenuItem>
+            )}
+            {address && networkInfo?.explorer && (
+              <DropdownMenuItem asChild>
+                <a href={`${networkInfo.explorer}/address/${address}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between cursor-pointer">
+                  View on Explorer
+                  <ExternalLink className="w-3 h-3 ml-2" />
+                </a>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setIsNetworkDialogOpen(true)} className="cursor-pointer">
+              <Network className="w-4 h-4 mr-2" />
+              Switch Network
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={disconnectWallet} className="text-red-600 cursor-pointer">
+              <XCircle className="w-4 h-4 mr-2" />
+              Disconnect
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Button onClick={connectWallet} className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+          <Plug className="w-4 h-4 mr-2" />
+          Connect Wallet
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Connect Your Wallet</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          
-          <div className="space-y-3">
-            {availableProviders.map((provider) => (
-              <Card 
-                key={provider.name}
-                className={`cursor-pointer transition-all hover:shadow-md ${
-                  !provider.isInstalled ? 'opacity-50' : ''
-                }`}
-                onClick={() => provider.isInstalled && handleConnect(provider.name)}
+      )}
+
+      {error && (
+        <Alert variant="destructive" className="mt-4">
+          <XCircle className="h-4 w-4" />
+          <AlertTitle>Connection Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      <Dialog open={isNetworkDialogOpen} onOpenChange={setIsNetworkDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Switch Network</DialogTitle>
+            <DialogDescription>
+              Please select a network to connect to. Polygon Mainnet is recommended for low fees.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2 py-4">
+            {Object.entries(SUPPORTED_NETWORKS).map(([chainId, info]) => (
+              <Button
+                key={chainId}
+                variant={networkInfo?.chainId === Number(chainId) ? 'default' : 'outline'}
+                onClick={() => handleSwitchNetwork(Number(chainId))}
+                disabled={networkInfo?.chainId === Number(chainId)}
+                className="justify-start"
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl">{provider.icon}</span>
-                      <div>
-                        <div className="font-medium">{provider.name}</div>
-                        {!provider.isInstalled && (
-                          <div className="text-xs text-muted-foreground">Not installed</div>
-                        )}
-                      </div>
-                    </div>
-                    {provider.isInstalled ? (
-                      <Button size="sm">Connect</Button>
-                    ) : (
-                      <Button size="sm" variant="outline" asChild>
-                        <a 
-                          href={getInstallUrl(provider.name)} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          Install
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                {info.name}
+                {networkInfo?.chainId === Number(chainId) && <CheckCircle className="w-4 h-4 ml-auto text-green-500" />}
+              </Button>
             ))}
           </div>
-
-          <div className="text-xs text-muted-foreground text-center space-y-2">
-            <p>By connecting a wallet, you agree to our Terms of Service.</p>
-            <p>Your wallet address will be stored in your session only.</p>
-            <p>Default network: Polygon (for lower fees)</p>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </>
   )
-}
-
-function getInstallUrl(walletName: string): string {
-  switch (walletName) {
-    case 'MetaMask':
-      return 'https://metamask.io/download/'
-    case 'Phantom':
-      return 'https://phantom.app/download'
-    default:
-      return '#'
-  }
 }

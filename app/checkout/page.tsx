@@ -1,226 +1,208 @@
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { BookOpen, CreditCard, Shield, CheckCircle } from 'lucide-react'
-import Image from "next/image"
-import Link from "next/link"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { BookOpen, Menu, X } from 'lucide-react'
+import { useState } from "react"
+import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function CheckoutPage() {
-  const course = {
-    title: "Complete Web Development Bootcamp",
-    instructor: "Sarah Johnson",
-    image: "/web-development-course.png",
-    price: 89,
-    originalPrice: 199,
-    discount: 55
-  }
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Navigation */}
-      <nav className="border-b bg-white sticky top-0 z-50">
+      <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
+            {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-slate-800">EduMarket</span>
             </Link>
-            <div className="flex items-center space-x-2">
-              <Shield className="w-5 h-5 text-green-600" />
-              <span className="text-sm text-slate-600">Secure Checkout</span>
+
+            {/* Centered Navigation Links */}
+            <div className="hidden md:flex items-center justify-center flex-1">
+              <div className="flex space-x-8">
+                <Link href="/courses" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                  Courses
+                </Link>
+                <Link href="/courses?view=categories" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                  Categories
+                </Link>
+                <Link href="/about" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                  About
+                </Link>
+              </div>
+            </div>
+
+            {/* Auth Buttons */}
+            <div className="flex items-center space-x-4">
+              <WalletButton />
+              <Link href="/auth/signin">
+                <Button variant="ghost" className="hidden sm:inline-flex">Sign In</Button>
+              </Link>
+              <Link href="/auth/signup">
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                  Get Started
+                </Button>
+              </Link>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="md:hidden"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
             </div>
           </div>
+          
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="md:hidden border-t bg-white/95 backdrop-blur-md">
+              <div className="px-4 py-4 space-y-3">
+                <Link href="/courses" className="block text-slate-600 hover:text-slate-900 font-medium">Courses</Link>
+                <Link href="/courses?view=categories" className="block text-slate-600 hover:text-slate-900 font-medium">Categories</Link>
+                <Link href="/about" className="block text-slate-600 hover:text-slate-900 font-medium">About</Link>
+                <div className="pt-3 border-t">
+                  <div className="mb-3">
+                    <WalletButton />
+                  </div>
+                  <Link href="/auth/signin">
+                    <Button variant="ghost" className="w-full justify-start mb-2">Sign In</Button>
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700">Get Started</Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Checkout Form */}
-          <div className="space-y-8">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">Checkout</h1>
-              <p className="text-slate-600">Complete your purchase to start learning</p>
-            </div>
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-4xl font-bold text-slate-900 mb-8 text-center">Checkout</h1>
 
-            {/* Payment Method */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <CreditCard className="w-5 h-5" />
-                  <span>Payment Method</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
-                  <Button variant="outline" className="h-12 flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 mr-2" />
-                    Card
-                  </Button>
-                  <Button variant="outline" className="h-12">
-                    PayPal
-                  </Button>
-                  <Button variant="outline" className="h-12">
-                    Apple Pay
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Order Summary */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Order Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between">
+                <p className="text-slate-700">Complete Web Development Bootcamp</p>
+                <p className="font-semibold text-slate-900">$89.00</p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-slate-700">Subtotal</p>
+                <p className="font-semibold text-slate-900">$89.00</p>
+              </div>
+              <div className="flex justify-between font-bold text-lg">
+                <p className="text-slate-900">Total</p>
+                <p className="text-slate-900">$89.00</p>
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Billing Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Billing Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="John" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Doe" />
-                  </div>
+          {/* Payment Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Information</CardTitle>
+              <CardDescription>Enter your payment details to complete the purchase.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="card-number">Card Number</Label>
+                <Input id="card-number" placeholder="XXXX-XXXX-XXXX-XXXX" required type="text" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="expiry-date">Expiry Date</Label>
+                  <Input id="expiry-date" placeholder="MM/YY" required type="text" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="john@example.com" />
+                  <Label htmlFor="cvv">CVV</Label>
+                  <Input id="cvv" placeholder="XXX" required type="text" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cardNumber">Card Number</Label>
-                  <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="expiry">Expiry Date</Label>
-                    <Input id="expiry" placeholder="MM/YY" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cvv">CVV</Label>
-                    <Input id="cvv" placeholder="123" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="country">Country</Label>
-                  <Input id="country" placeholder="United States" />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Complete Purchase */}
-            <Link href="/dashboard">
-              <Button className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-lg">
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="card-name">Name on Card</Label>
+                <Input id="card-name" placeholder="John Doe" required type="text" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="country">Country</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="usa">United States</SelectItem>
+                    <SelectItem value="canada">Canada</SelectItem>
+                    <SelectItem value="uk">United Kingdom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
                 Complete Purchase
               </Button>
-            </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
 
-            <div className="flex items-center justify-center space-x-2 text-sm text-slate-500">
-              <Shield className="w-4 h-4" />
-              <span>Your payment information is secure and encrypted</span>
+      {/* Footer */}
+      <footer className="bg-slate-900 text-slate-300 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="space-y-4">
+              <Link href="/" className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
+                  <BookOpen className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold text-white">EduMarket</span>
+              </Link>
+              <p className="text-slate-400">Empowering learners worldwide with quality education and expert instruction.</p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">Platform</h3>
+              <div className="space-y-2">
+                <Link href="/courses" className="block hover:text-white transition-colors">Browse Courses</Link>
+                <Link href="/courses?view=categories" className="block hover:text-white transition-colors">Categories</Link>
+                <Link href="/about" className="block hover:text-white transition-colors">About</Link>
+                <Link href="/pricing" className="block hover:text-white transition-colors">Pricing</Link>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">Support</h3>
+              <div className="space-y-2">
+                <Link href="/help" className="block hover:text-white transition-colors">Help Center</Link>
+                <Link href="/contact" className="block hover:text-white transition-colors">Contact Us</Link>
+                <Link href="/community" className="block hover:text-white transition-colors">Community</Link>
+                <Link href="/blog" className="block hover:text-white transition-colors">Blog</Link>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">Company</h3>
+              <div className="space-y-2">
+                <Link href="/about" className="block hover:text-white transition-colors">About Us</Link>
+                <Link href="/careers" className="block hover:text-white transition-colors">Careers</Link>
+                <Link href="/privacy" className="block hover:text-white transition-colors">Privacy Policy</Link>
+                <Link href="/terms" className="block hover:text-white transition-colors">Terms of Service</Link>
+              </div>
             </div>
           </div>
-
-          {/* Order Summary */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex space-x-4">
-                  <Image
-                    src={course.image || "/placeholder.svg"}
-                    alt={course.title}
-                    width={100}
-                    height={75}
-                    className="rounded-lg object-cover"
-                  />
-                  <div className="flex-1 space-y-2">
-                    <h3 className="font-semibold text-slate-900">{course.title}</h3>
-                    <p className="text-sm text-slate-600">by {course.instructor}</p>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-slate-900">${course.price}</span>
-                      <span className="text-sm text-slate-500 line-through">${course.originalPrice}</span>
-                      <Badge className="bg-green-100 text-green-700">
-                        {course.discount}% off
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Subtotal</span>
-                    <span className="text-slate-900">${course.price}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Tax</span>
-                    <span className="text-slate-900">$0</span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-lg font-bold">
-                    <span className="text-slate-900">Total</span>
-                    <span className="text-slate-900">${course.price}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Guarantee */}
-            <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-6 h-6 text-green-600 mt-1" />
-                  <div>
-                    <h4 className="font-semibold text-green-900">30-Day Money-Back Guarantee</h4>
-                    <p className="text-sm text-green-700 mt-1">
-                      If you're not satisfied with your purchase, we'll refund your money within 30 days.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* What's Included */}
-            <Card>
-              <CardHeader>
-                <CardTitle>What's Included</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>42 hours of on-demand video</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>Downloadable resources</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>Certificate of completion</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>Lifetime access</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>Access on mobile and desktop</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="border-t border-slate-800 mt-12 pt-8 text-center">
+            <p className="text-slate-400">© 2025 EduMarket. All rights reserved.</p>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }

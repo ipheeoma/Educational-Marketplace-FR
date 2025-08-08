@@ -1,122 +1,145 @@
-'use client'
+import { useState, useEffect, useCallback } from 'react';
+import { connectMetaMask, getBalance, shortenAddress, switchNetwork, SUPPORTED_NETWORKS, NetworkId, NetworkInfo } from '@/lib/wallet';
 
-import { useState, useEffect, useCallback } from 'react'
-import { WalletInfo, WalletProvider, getWalletProviders, DEFAULT_NETWORK, isNetworkSupported } from '@/lib/wallet'
-
-interface UseWalletReturn {
-  wallet: WalletInfo | null
-  isConnecting: boolean
-  error: string | null
-  connect: (provider: WalletProvider) => Promise<void>
-  disconnect: () => void
-  switchNetwork: (chainId: number) => Promise<void>
-  availableProviders: WalletProvider[]
+interface WalletState {
+  address: string | null;
+  chainId: NetworkId | null;
+  balance: string | null;
+  isConnected: boolean;
+  error: string | null;
+  networkInfo: NetworkInfo | null;
 }
 
-export const useWallet = (): UseWalletReturn => {
-  const [wallet, setWallet] = useState<WalletInfo | null>(null)
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [availableProviders, setAvailableProviders] = useState<WalletProvider[]>([])
+const defaultState: WalletState = {
+  address: null,
+  chainId: null,
+  balance: null,
+  isConnected: false,
+  error: null,
+  networkInfo: null,
+};
 
-  // Initialize providers
-  useEffect(() => {
-    setAvailableProviders(getWalletProviders())
-  }, [])
+export const useWallet = () => {
+  const [wallet, setWallet] = useState<WalletState>(() => {
+    // Initialize from session storage if available
+    if (typeof window !== 'undefined') {
+      const storedAddress = sessionStorage.getItem('walletAddress');
+      const storedChainId = sessionStorage.getItem('walletChainId');
+      if (storedAddress && storedChainId) {
+        const chainIdNum = Number(storedChainId);
+        const networkInfo = SUPPORTED_NETWORKS[chainIdNum as NetworkId];
+        return {
+          address: storedAddress,
+          chainId: chainIdNum as NetworkId,
+          balance: null, // Will be fetched on mount
+          isConnected: true,
+          error: null,
+          networkInfo: networkInfo || null,
+        };
+      }
+    }
+    return defaultState;
+  });
 
-  // Load wallet from session storage
-  useEffect(() => {
-    const savedWallet = sessionStorage.getItem('connectedWallet')
-    if (savedWallet) {
+  const updateWalletState = useCallback((updates: Partial<WalletState>) => {
+    setWallet(prevState => ({ ...prevState, ...updates }));
+  }, []);
+
+  const connectWallet = useCallback(async () => {
+    updateWalletState({ error: null });
+    try {
+      const { address, chainId } = await connectMetaMask();
+      const networkInfo = SUPPORTED_NETWORKS[chainId as NetworkId];
+      if (!networkInfo) {
+        throw new Error(`Unsupported network detected: ${chainId}. Please switch to a supported network like Polygon.`);
+      }
+      const fetchedBalance = await getBalance(address, chainId);
+
+      sessionStorage.setItem('walletAddress', address);
+      sessionStorage.setItem('walletChainId', String(chainId));
+
+      updateWalletState({
+        address,
+        chainId,
+        balance: fetchedBalance,
+        isConnected: true,
+        networkInfo,
+      });
+    } catch (err: any) {
+      console.error("Failed to connect wallet:", err);
+      updateWalletState({ error: err.message || "Failed to connect wallet." });
+      disconnectWallet(); // Ensure state is reset on error
+    }
+  }, [updateWalletState]);
+
+  const disconnectWallet = useCallback(() => {
+    sessionStorage.removeItem('walletAddress');
+    sessionStorage.removeItem('walletChainId');
+    updateWalletState(defaultState);
+  }, [updateWalletState]);
+
+  const fetchBalance = useCallback(async () => {
+    if (wallet.address && wallet.chainId) {
       try {
-        setWallet(JSON.parse(savedWallet))
-      } catch (error) {
-        console.error('Failed to parse saved wallet:', error)
-        sessionStorage.removeItem('connectedWallet')
+        const fetchedBalance = await getBalance(wallet.address, wallet.chainId);
+        updateWalletState({ balance: fetchedBalance });
+      } catch (err: any) {
+        console.error("Failed to fetch balance:", err);
+        updateWalletState({ error: err.message || "Failed to fetch balance." });
       }
     }
-  }, [])
+  }, [wallet.address, wallet.chainId, updateWalletState]);
 
-  // Listen for account changes
+  const handleAccountsChanged = useCallback((accounts: string[]) => {
+    if (accounts.length === 0) {
+      disconnectWallet();
+    } else {
+      updateWalletState({ address: accounts[0], error: null });
+      fetchBalance();
+    }
+  }, [disconnectWallet, updateWalletState, fetchBalance]);
+
+  const handleChainChanged = useCallback((chainIdHex: string) => {
+    const newChainId = Number(chainIdHex);
+    const networkInfo = SUPPORTED_NETWORKS[newChainId as NetworkId];
+    if (networkInfo) {
+      updateWalletState({ chainId: newChainId as NetworkId, networkInfo, error: null });
+      fetchBalance();
+    } else {
+      updateWalletState({
+        chainId: newChainId as NetworkId,
+        networkInfo: null,
+        error: `Unsupported network: ${newChainId}. Please switch to a supported network.`,
+      });
+      // Optionally, prompt to switch or disconnect
+    }
+  }, [updateWalletState, fetchBalance]);
+
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window.ethereum !== 'undefined') {
+      // Initial fetch of balance if already connected via session storage
+      if (wallet.isConnected && wallet.address && wallet.chainId && !wallet.balance) {
+        fetchBalance();
+      }
 
-    const ethereum = (window as any).ethereum
-    if (!ethereum) return
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
 
-    const handleAccountsChanged = (accounts: string[]) => {
-      if (accounts.length === 0) {
-        disconnect()
-      } else if (wallet && accounts[0] !== wallet.address) {
-        // Account changed, reconnect
-        const currentProvider = availableProviders.find(p => p.name === 'MetaMask')
-        if (currentProvider) {
-          connect(currentProvider)
+      return () => {
+        if (window.ethereum.removeListener) {
+          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+          window.ethereum.removeListener('chainChanged', handleChainChanged);
         }
-      }
+      };
     }
-
-    const handleChainChanged = (chainId: string) => {
-      const numericChainId = parseInt(chainId, 16)
-      if (wallet) {
-        setWallet(prev => prev ? {
-          ...prev,
-          chainId: numericChainId,
-          networkName: isNetworkSupported(numericChainId) ? 
-            require('@/lib/wallet').getNetworkName(numericChainId) : 'Unsupported Network'
-        } : null)
-      }
-    }
-
-    ethereum.on('accountsChanged', handleAccountsChanged)
-    ethereum.on('chainChanged', handleChainChanged)
-
-    return () => {
-      ethereum.removeListener('accountsChanged', handleAccountsChanged)
-      ethereum.removeListener('chainChanged', handleChainChanged)
-    }
-  }, [wallet, availableProviders])
-
-  const connect = useCallback(async (provider: WalletProvider) => {
-    setIsConnecting(true)
-    setError(null)
-
-    try {
-      const walletInfo = await provider.connect()
-      setWallet(walletInfo)
-      sessionStorage.setItem('connectedWallet', JSON.stringify(walletInfo))
-    } catch (error: any) {
-      setError(error.message)
-      console.error('Wallet connection error:', error)
-    } finally {
-      setIsConnecting(false)
-    }
-  }, [])
-
-  const disconnect = useCallback(() => {
-    setWallet(null)
-    setError(null)
-    sessionStorage.removeItem('connectedWallet')
-  }, [])
-
-  const switchNetwork = useCallback(async (chainId: number) => {
-    if (!wallet) return
-
-    try {
-      await require('@/lib/wallet').switchNetwork(chainId)
-      // The chain change will be handled by the event listener
-    } catch (error: any) {
-      setError(`Failed to switch network: ${error.message}`)
-    }
-  }, [wallet])
+  }, [wallet.isConnected, wallet.address, wallet.chainId, wallet.balance, fetchBalance, handleAccountsChanged, handleChainChanged]);
 
   return {
-    wallet,
-    isConnecting,
-    error,
-    connect,
-    disconnect,
+    ...wallet,
+    shortenedAddress: wallet.address ? shortenAddress(wallet.address) : null,
+    connectWallet,
+    disconnectWallet,
     switchNetwork,
-    availableProviders
-  }
-}
+    fetchBalance,
+  };
+};

@@ -1,77 +1,21 @@
+'use client'
+
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { BookOpen, Users, Award, TrendingUp, Globe, Heart, Target, Zap, Shield, CheckCircle } from 'lucide-react'
+import { BookOpen, Users, Award, Menu, X } from 'lucide-react'
 import Link from "next/link"
 import Image from "next/image"
+import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function AboutPage() {
-  const teamMembers = [
-    {
-      name: "Sarah Johnson",
-      role: "CEO & Co-Founder",
-      bio: "Former VP of Education at TechCorp with 15+ years in EdTech",
-      avatar: "/professional-headshot-female.png",
-      linkedin: "#"
-    },
-    {
-      name: "Michael Chen",
-      role: "CTO & Co-Founder",
-      bio: "Ex-Google engineer passionate about scalable learning platforms",
-      avatar: "/professional-asian-male-headshot.png",
-      linkedin: "#"
-    },
-    {
-      name: "Emma Rodriguez",
-      role: "Head of Content",
-      bio: "Award-winning educator and curriculum designer",
-      avatar: "/professional-headshot-female.png",
-      linkedin: "#"
-    },
-    {
-      name: "Alex Thompson",
-      role: "Head of Engineering",
-      bio: "Full-stack developer with expertise in learning technologies",
-      avatar: "/professional-male-headshot.png",
-      linkedin: "#"
-    }
-  ]
-
-  const values = [
-    {
-      icon: Heart,
-      title: "Student-First",
-      description: "Every decision we make prioritizes the learning experience and student success."
-    },
-    {
-      icon: Globe,
-      title: "Accessible Education",
-      description: "We believe quality education should be accessible to everyone, everywhere."
-    },
-    {
-      icon: Target,
-      title: "Excellence",
-      description: "We maintain the highest standards in course quality and platform performance."
-    },
-    {
-      icon: Zap,
-      title: "Innovation",
-      description: "We continuously evolve our platform with cutting-edge learning technologies."
-    }
-  ]
-
-  const stats = [
-    { number: "50,000+", label: "Active Students" },
-    { number: "1,200+", label: "Expert Courses" },
-    { number: "500+", label: "Certified Instructors" },
-    { number: "98%", label: "Student Satisfaction" }
-  ]
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
-      <nav className="border-b bg-white sticky top-0 z-50">
+      <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -91,7 +35,7 @@ export default function AboutPage() {
                 <Link href="/courses?view=categories" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
                   Categories
                 </Link>
-                <Link href="/about" className="text-blue-600 font-medium">
+                <Link href="/about" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
                   About
                 </Link>
               </div>
@@ -99,203 +43,155 @@ export default function AboutPage() {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-4">
+              <WalletButton />
               <Link href="/auth/signin">
-                <Button variant="ghost">Sign In</Button>
+                <Button variant="ghost" className="hidden sm:inline-flex">Sign In</Button>
               </Link>
               <Link href="/auth/signup">
-                <Button className="bg-gradient-to-r from-blue-600 to-indigo-700">Get Started</Button>
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                  Get Started
+                </Button>
               </Link>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="md:hidden"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
             </div>
           </div>
+          
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="md:hidden border-t bg-white/95 backdrop-blur-md">
+              <div className="px-4 py-4 space-y-3">
+                <Link href="/courses" className="block text-slate-600 hover:text-slate-900 font-medium">Courses</Link>
+                <Link href="/courses?view=categories" className="block text-slate-600 hover:text-slate-900 font-medium">Categories</Link>
+                <Link href="/about" className="block text-slate-600 hover:text-slate-900 font-medium">About</Link>
+                <div className="pt-3 border-t">
+                  <div className="mb-3">
+                    <WalletButton />
+                  </div>
+                  <Link href="/auth/signin">
+                    <Button variant="ghost" className="w-full justify-start mb-2">Sign In</Button>
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700">Get Started</Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-8">
-            <div className="space-y-4">
-              <h1 className="text-4xl lg:text-6xl font-bold">
-                Empowering Learners
-                <span className="block">Worldwide</span>
-              </h1>
-              <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-                At EduMarket, we're on a mission to democratize education and make high-quality learning accessible to everyone, everywhere.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/courses">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 text-lg px-8">
-                  Explore Courses
-                </Button>
-              </Link>
-              <Link href="/auth/signup">
-                <Button size="lg" variant="outline" className="text-lg px-8 border-white text-white hover:bg-white/10">
-                  Join Our Community
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        <section className="text-center space-y-6">
+          <h1 className="text-5xl font-bold text-slate-900">About EduMarket</h1>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            Empowering learners worldwide with quality education and expert instruction.
+          </p>
+        </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            {stats.map((stat, index) => (
-              <div key={index} className="space-y-2">
-                <div className="text-4xl font-bold text-slate-900">{stat.number}</div>
-                <div className="text-slate-600">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Mission Section */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-4xl font-bold text-slate-900">Our Mission</h2>
-                <p className="text-xl text-slate-600 leading-relaxed">
-                  We believe that education is the great equalizer. Our platform connects passionate learners with world-class instructors, breaking down barriers to quality education.
-                </p>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-slate-900">Quality First</h3>
-                    <p className="text-slate-600">Every course is carefully curated and reviewed by our expert team.</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-slate-900">Global Accessibility</h3>
-                    <p className="text-slate-600">Learn from anywhere, at any time, on any device.</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-slate-900">Community Driven</h3>
-                    <p className="text-slate-600">Join a vibrant community of learners and instructors.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <Image
-                src="/modern-online-learning.png"
-                alt="Our Mission"
-                width={600}
-                height={400}
-                className="w-full h-auto rounded-lg shadow-lg"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Values Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl font-bold text-slate-900">Our Values</h2>
-            <p className="text-xl text-slate-600">The principles that guide everything we do</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <Card key={index} className="text-center border-0 shadow-lg">
-                <CardContent className="p-8 space-y-4">
-                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center">
-                    <value.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-slate-900">{value.title}</h3>
-                    <p className="text-slate-600">{value.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl font-bold text-slate-900">Meet Our Team</h2>
-            <p className="text-xl text-slate-600">The passionate people behind EduMarket</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {teamMembers.map((member, index) => (
-              <Card key={index} className="text-center border-0 shadow-lg">
-                <CardContent className="p-8 space-y-4">
-                  <Avatar className="w-24 h-24 mx-auto">
-                    <AvatarImage src={member.avatar || "/placeholder.svg"} />
-                    <AvatarFallback className="text-2xl">{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-slate-900">{member.name}</h3>
-                    <p className="text-blue-600 font-medium">{member.role}</p>
-                    <p className="text-slate-600 text-sm">{member.bio}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Story Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-8">
-            <h2 className="text-4xl font-bold text-slate-900">Our Story</h2>
-            <div className="space-y-6 text-lg text-slate-600 leading-relaxed">
-              <p>
-                EduMarket was born from a simple observation: the best education shouldn't be limited by geography, financial status, or institutional barriers. In 2020, our founders Sarah and Michael recognized that while technology had transformed many industries, education remained largely unchanged.
-              </p>
-              <p>
-                Starting with just 10 courses and a handful of instructors, we've grown into a global platform serving over 50,000 students worldwide. Our success isn't measured just in numbers, but in the careers transformed, skills developed, and dreams realized through our platform.
-              </p>
-              <p>
-                Today, we continue to innovate and expand, always keeping our core mission at heart: making quality education accessible to everyone, everywhere.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-slate-900 to-slate-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-8">
-            <h2 className="text-4xl font-bold text-white">Join Our Mission</h2>
-            <p className="text-xl text-slate-300">
-              Whether you're a learner looking to grow or an expert ready to teach, we'd love to have you as part of our community.
+        <section className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <h2 className="text-4xl font-bold text-slate-900">Our Mission</h2>
+            <p className="text-lg text-slate-700 leading-relaxed">
+              At EduMarket, our mission is to democratize education by providing accessible, high-quality online courses
+              to anyone, anywhere. We believe that learning should be a lifelong journey, and we are committed to
+              equipping individuals with the skills they need to thrive in a rapidly evolving world.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/signup">
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-lg px-8">
-                  Start Learning
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button size="lg" variant="outline" className="text-lg px-8 border-slate-300 text-slate-300 hover:bg-slate-800">
-                  Get in Touch
-                </Button>
-              </Link>
-            </div>
+            <p className="text-lg text-slate-700 leading-relaxed">
+              We partner with industry experts and leading educators to create engaging and practical content that
+              delivers real-world value. Our platform is designed to be intuitive and supportive, fostering a community
+              where learners can connect, collaborate, and grow.
+            </p>
           </div>
-        </div>
-      </section>
+          <div className="relative">
+            <Image
+              src="/modern-online-learning.png"
+              alt="Our Mission"
+              width={600}
+              height={400}
+              className="w-full h-auto rounded-lg shadow-lg"
+            />
+          </div>
+        </section>
+
+        <section className="text-center space-y-6">
+          <h2 className="text-4xl font-bold text-slate-900">Our Values</h2>
+          <div className="grid md:grid-cols-3 gap-8 pt-8">
+            <Card className="p-6 space-y-4 shadow-md">
+              <div className="w-16 h-16 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center mx-auto">
+                <Award className="w-8 h-8" />
+              </div>
+              <CardTitle className="text-xl font-semibold">Quality</CardTitle>
+              <CardDescription className="text-slate-600">
+                We are committed to delivering the highest quality educational content.
+              </CardDescription>
+            </Card>
+            <Card className="p-6 space-y-4 shadow-md">
+              <div className="w-16 h-16 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto">
+                <Users className="w-8 h-8" />
+              </div>
+              <CardTitle className="text-xl font-semibold">Community</CardTitle>
+              <CardDescription className="text-slate-600">
+                Fostering a supportive and collaborative learning environment.
+              </CardDescription>
+            </Card>
+            <Card className="p-6 space-y-4 shadow-md">
+              <div className="w-16 h-16 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center mx-auto">
+                <BookOpen className="w-8 h-8" />
+              </div>
+              <CardTitle className="text-xl font-semibold">Accessibility</CardTitle>
+              <CardDescription className="text-slate-600">
+                Making education available to everyone, regardless of background.
+              </CardDescription>
+            </Card>
+          </div>
+        </section>
+
+        <section className="space-y-6">
+          <h2 className="text-4xl font-bold text-slate-900 text-center">Meet Our Team</h2>
+          <div className="grid md:grid-cols-3 gap-8 pt-8">
+            <Card className="p-6 text-center space-y-4 shadow-md">
+              <Avatar className="w-24 h-24 mx-auto">
+                <AvatarImage src="/professional-male-headshot.png" />
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+              <CardTitle className="text-xl font-semibold">John Doe</CardTitle>
+              <CardDescription className="text-slate-600">CEO & Co-founder</CardDescription>
+              <p className="text-sm text-slate-700">
+                John is a visionary leader with over 15 years of experience in online education.
+              </p>
+            </Card>
+            <Card className="p-6 text-center space-y-4 shadow-md">
+              <Avatar className="w-24 h-24 mx-auto">
+                <AvatarImage src="/professional-headshot-female.png" />
+                <AvatarFallback>JS</AvatarFallback>
+              </Avatar>
+              <CardTitle className="text-xl font-semibold">Jane Smith</CardTitle>
+              <CardDescription className="text-slate-600">Chief Learning Officer</CardDescription>
+              <p className="text-sm text-slate-700">
+                Jane designs our curriculum, ensuring it meets the highest educational standards.
+              </p>
+            </Card>
+            <Card className="p-6 text-center space-y-4 shadow-md">
+              <Avatar className="w-24 h-24 mx-auto">
+                <AvatarImage src="/professional-asian-male-headshot.png" />
+                <AvatarFallback>DK</AvatarFallback>
+              </Avatar>
+              <CardTitle className="text-xl font-semibold">David Kim</CardTitle>
+              <CardDescription className="text-slate-600">Head of Technology</CardDescription>
+              <p className="text-sm text-slate-700">
+                David leads our tech team, building a robust and scalable learning platform.
+              </p>
+            </Card>
+          </div>
+        </section>
+      </main>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">

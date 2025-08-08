@@ -1,211 +1,120 @@
 import { ethers } from 'ethers'
 
-export interface WalletInfo {
-  address: string
-  chainId: number
-  networkName: string
-  balance?: string
-}
-
-export interface WalletProvider {
-  name: string
-  icon: string
-  isInstalled: boolean
-  connect: () => Promise<WalletInfo>
-  disconnect: () => void
-}
-
-// Supported networks
+// Define supported networks
 export const SUPPORTED_NETWORKS = {
-  137: {
-    name: 'Polygon',
-    rpcUrl: 'https://polygon-rpc.com/',
-    symbol: 'MATIC',
-    blockExplorer: 'https://polygonscan.com/'
-  },
-  1: {
-    name: 'Ethereum',
-    rpcUrl: 'https://mainnet.infura.io/v3/YOUR_INFURA_KEY',
-    symbol: 'ETH',
-    blockExplorer: 'https://etherscan.io/'
-  },
-  56: {
-    name: 'BSC',
-    rpcUrl: 'https://bsc-dataseed.binance.org/',
-    symbol: 'BNB',
-    blockExplorer: 'https://bscscan.com/'
+  1: { name: 'Ethereum Mainnet', rpcUrl: 'https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID', currency: 'ETH', explorer: 'https://etherscan.io' },
+  137: { name: 'Polygon Mainnet', rpcUrl: 'https://polygon-rpc.com', currency: 'MATIC', explorer: 'https://polygonscan.com' },
+  56: { name: 'Binance Smart Chain Mainnet', rpcUrl: 'https://bsc-dataseed.binance.org', currency: 'BNB', explorer: 'https://bscscan.com' },
+  // Add more networks as needed
+} as const;
+
+export type NetworkId = keyof typeof SUPPORTED_NETWORKS;
+export type NetworkInfo = typeof SUPPORTED_NETWORKS[NetworkId];
+
+// Helper to get network info by ID
+export const getNetworkInfo = (chainId: number): NetworkInfo | undefined => {
+  return SUPPORTED_NETWORKS[chainId as NetworkId];
+};
+
+// Function to shorten wallet address for display
+export const shortenAddress = (address: string, chars = 4): string => {
+  if (!address) return '';
+  return `${address.substring(0, chars + 2)}...${address.substring(address.length - chars)}`;
+};
+
+// Function to connect to MetaMask
+export const connectMetaMask = async (): Promise<{ address: string; chainId: number } | null> => {
+  if (typeof window.ethereum === 'undefined') {
+    throw new Error('MetaMask is not installed!');
   }
-}
-
-export const DEFAULT_NETWORK = 137 // Polygon
-
-// Utility functions
-export const shortenAddress = (address: string): string => {
-  if (!address) return ''
-  return `${address.slice(0, 6)}...${address.slice(-4)}`
-}
-
-export const getNetworkName = (chainId: number): string => {
-  return SUPPORTED_NETWORKS[chainId as keyof typeof SUPPORTED_NETWORKS]?.name || 'Unknown Network'
-}
-
-export const isNetworkSupported = (chainId: number): boolean => {
-  return chainId in SUPPORTED_NETWORKS
-}
-
-// MetaMask provider
-export const createMetaMaskProvider = (): WalletProvider => ({
-  name: 'MetaMask',
-  icon: '🦊',
-  isInstalled: typeof window !== 'undefined' && !!(window as any).ethereum?.isMetaMask,
-  
-  connect: async (): Promise<WalletInfo> => {
-    if (typeof window === 'undefined' || !(window as any).ethereum) {
-      throw new Error('MetaMask not installed')
-    }
-
-    const ethereum = (window as any).ethereum
-    
-    try {
-      // Request account access
-      const accounts = await ethereum.request({
-        method: 'eth_requestAccounts'
-      })
-
-      if (!accounts || accounts.length === 0) {
-        throw new Error('No accounts found')
-      }
-
-      // Get chain ID
-      const chainId = await ethereum.request({
-        method: 'eth_chainId'
-      })
-
-      const numericChainId = parseInt(chainId, 16)
-
-      // Switch to default network if not supported
-      if (!isNetworkSupported(numericChainId)) {
-        await switchNetwork(DEFAULT_NETWORK)
-      }
-
-      // Get balance
-      const provider = new ethers.BrowserProvider(ethereum)
-      const balance = await provider.getBalance(accounts[0])
-      const formattedBalance = ethers.formatEther(balance)
-
-      return {
-        address: accounts[0],
-        chainId: numericChainId,
-        networkName: getNetworkName(numericChainId),
-        balance: parseFloat(formattedBalance).toFixed(4)
-      }
-    } catch (error: any) {
-      throw new Error(`Failed to connect MetaMask: ${error.message}`)
-    }
-  },
-
-  disconnect: () => {
-    // MetaMask doesn't have a programmatic disconnect
-    // We'll handle this in the app state
-  }
-})
-
-// WalletConnect provider (simplified)
-export const createWalletConnectProvider = (): WalletProvider => ({
-  name: 'WalletConnect',
-  icon: '🔗',
-  isInstalled: true, // WalletConnect works through QR code
-  
-  connect: async (): Promise<WalletInfo> => {
-    // This would integrate with WalletConnect SDK
-    // For now, we'll show a placeholder
-    throw new Error('WalletConnect integration coming soon')
-  },
-
-  disconnect: () => {
-    // WalletConnect disconnect logic
-  }
-})
-
-// Phantom provider (for Solana)
-export const createPhantomProvider = (): WalletProvider => ({
-  name: 'Phantom',
-  icon: '👻',
-  isInstalled: typeof window !== 'undefined' && !!(window as any).solana?.isPhantom,
-  
-  connect: async (): Promise<WalletInfo> => {
-    if (typeof window === 'undefined' || !(window as any).solana) {
-      throw new Error('Phantom wallet not installed')
-    }
-
-    const solana = (window as any).solana
-    
-    try {
-      const response = await solana.connect()
-      
-      return {
-        address: response.publicKey.toString(),
-        chainId: 0, // Solana doesn't use chainId
-        networkName: 'Solana',
-        balance: '0' // Would need Solana RPC to get balance
-      }
-    } catch (error: any) {
-      throw new Error(`Failed to connect Phantom: ${error.message}`)
-    }
-  },
-
-  disconnect: async () => {
-    if (typeof window !== 'undefined' && (window as any).solana) {
-      await (window as any).solana.disconnect()
-    }
-  }
-})
-
-// Network switching utility
-export const switchNetwork = async (chainId: number): Promise<void> => {
-  if (typeof window === 'undefined' || !(window as any).ethereum) {
-    throw new Error('No wallet found')
-  }
-
-  const ethereum = (window as any).ethereum
-  const hexChainId = `0x${chainId.toString(16)}`
 
   try {
-    await ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: hexChainId }]
-    })
-  } catch (error: any) {
-    // If network doesn't exist, add it
-    if (error.code === 4902) {
-      const network = SUPPORTED_NETWORKS[chainId as keyof typeof SUPPORTED_NETWORKS]
-      if (network) {
-        await ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [{
-            chainId: hexChainId,
-            chainName: network.name,
-            rpcUrls: [network.rpcUrl],
-            nativeCurrency: {
-              name: network.symbol,
-              symbol: network.symbol,
-              decimals: 18
-            },
-            blockExplorerUrls: [network.blockExplorer]
-          }]
-        })
-      }
-    } else {
-      throw error
-    }
-  }
-}
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const accounts = await provider.send("eth_requestAccounts", []);
+    const network = await provider.getNetwork();
 
-// Get all available providers
-export const getWalletProviders = (): WalletProvider[] => {
-  return [
-    createMetaMaskProvider(),
-    createWalletConnectProvider(),
-    createPhantomProvider()
-  ]
+    if (accounts.length === 0) {
+      throw new Error('No accounts found or connected.');
+    }
+
+    const address = accounts[0];
+    const chainId = Number(network.chainId);
+
+    return { address, chainId };
+  } catch (error) {
+    console.error("Error connecting to MetaMask:", error);
+    throw error;
+  }
+};
+
+// Function to get wallet balance
+export const getBalance = async (address: string, chainId: number): Promise<string> => {
+  const networkInfo = getNetworkInfo(chainId);
+  if (!networkInfo) {
+    throw new Error(`Unsupported network: ${chainId}`);
+  }
+
+  try {
+    const provider = new ethers.JsonRpcProvider(networkInfo.rpcUrl);
+    const balance = await provider.getBalance(address);
+    return ethers.formatEther(balance);
+  } catch (error) {
+    console.error("Error fetching balance:", error);
+    return '0.0';
+  }
+};
+
+// Function to switch network
+export const switchNetwork = async (chainId: NetworkId): Promise<boolean> => {
+  if (typeof window.ethereum === 'undefined') {
+    throw new Error('MetaMask is not installed!');
+  }
+
+  const networkInfo = getNetworkInfo(chainId);
+  if (!networkInfo) {
+    throw new Error(`Network with ID ${chainId} is not supported.`);
+  }
+
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: ethers.toBeHex(chainId) }],
+    });
+    return true;
+  } catch (error: any) {
+    // This error code indicates that the chain has not been added to MetaMask.
+    if (error.code === 4902) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: ethers.toBeHex(chainId),
+              chainName: networkInfo.name,
+              rpcUrls: [networkInfo.rpcUrl],
+              nativeCurrency: {
+                name: networkInfo.currency,
+                symbol: networkInfo.currency,
+                decimals: 18,
+              },
+              blockExplorerUrls: [networkInfo.explorer],
+            },
+          ],
+        });
+        return true;
+      } catch (addError) {
+        console.error("Error adding network:", addError);
+        throw addError;
+      }
+    }
+    console.error("Error switching network:", error);
+    throw error;
+  }
+};
+
+// Type for window.ethereum
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
 }

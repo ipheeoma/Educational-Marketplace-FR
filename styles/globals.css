@@ -88,3 +88,6 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* This file is not used in the current Next.js App Router setup.
+   All global styles are managed in app/globals.css. */

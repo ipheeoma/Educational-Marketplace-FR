@@ -1,123 +1,145 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpen, Play, ArrowRight } from 'lucide-react'
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { BookOpen, Menu, X } from 'lucide-react'
+import { useState } from "react"
+import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function DemoPage() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
+            {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-slate-800">EduMarket</span>
             </Link>
+
+            {/* Centered Navigation Links */}
+            <div className="hidden md:flex items-center justify-center flex-1">
+              <div className="flex space-x-8">
+                <Link href="/courses" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                  Courses
+                </Link>
+                <Link href="/courses?view=categories" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                  Categories
+                </Link>
+                <Link href="/about" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                  About
+                </Link>
+              </div>
+            </div>
+
+            {/* Auth Buttons */}
             <div className="flex items-center space-x-4">
+              <WalletButton />
               <Link href="/auth/signin">
-                <Button variant="ghost">Sign In</Button>
+                <Button variant="ghost" className="hidden sm:inline-flex">Sign In</Button>
               </Link>
               <Link href="/auth/signup">
-                <Button className="bg-gradient-to-r from-blue-600 to-indigo-700">Get Started</Button>
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                  Get Started
+                </Button>
               </Link>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="md:hidden"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
             </div>
           </div>
+          
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="md:hidden border-t bg-white/95 backdrop-blur-md">
+              <div className="px-4 py-4 space-y-3">
+                <Link href="/courses" className="block text-slate-600 hover:text-slate-900 font-medium">Courses</Link>
+                <Link href="/courses?view=categories" className="block text-slate-600 hover:text-slate-900 font-medium">Categories</Link>
+                <Link href="/about" className="block text-slate-600 hover:text-slate-900 font-medium">About</Link>
+                <div className="pt-3 border-t">
+                  <div className="mb-3">
+                    <WalletButton />
+                  </div>
+                  <Link href="/auth/signin">
+                    <Button variant="ghost" className="w-full justify-start mb-2">Sign In</Button>
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700">Get Started</Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-4xl lg:text-5xl font-bold text-slate-900">
-              See EduMarket in Action
-            </h1>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Watch our platform demo to see how easy it is to start learning and teaching on EduMarket
-            </p>
-          </div>
+      <main className="flex-1 flex items-center justify-center py-12 px-4">
+        <div className="text-center space-y-6">
+          <h1 className="text-4xl font-bold text-slate-900">Demo Page</h1>
+          <p className="text-lg text-slate-600">This is a placeholder for your interactive demo content.</p>
+          <Link href="/">
+            <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+              Go to Homepage
+            </Button>
+          </Link>
+        </div>
+      </main>
 
-          {/* Video Player */}
-          <Card className="overflow-hidden shadow-2xl">
-            <div className="relative bg-slate-900 aspect-video flex items-center justify-center">
-              <div className="text-center space-y-4">
-                <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto">
-                  <Play className="w-8 h-8 text-white ml-1" />
+      {/* Footer */}
+      <footer className="bg-slate-900 text-slate-300 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="space-y-4">
+              <Link href="/" className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
+                  <BookOpen className="w-5 h-5 text-white" />
                 </div>
-                <div className="text-white">
-                  <h3 className="text-xl font-semibold">Platform Demo Video</h3>
-                  <p className="text-white/80">Duration: 3:45</p>
-                </div>
-                <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                  <Play className="w-5 h-5 mr-2" />
-                  Play Demo
-                </Button>
+                <span className="text-xl font-bold text-white">EduMarket</span>
+              </Link>
+              <p className="text-slate-400">Empowering learners worldwide with quality education and expert instruction.</p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">Platform</h3>
+              <div className="space-y-2">
+                <Link href="/courses" className="block hover:text-white transition-colors">Browse Courses</Link>
+                <Link href="/courses?view=categories" className="block hover:text-white transition-colors">Categories</Link>
+                <Link href="/about" className="block hover:text-white transition-colors">About</Link>
+                <Link href="/pricing" className="block hover:text-white transition-colors">Pricing</Link>
               </div>
             </div>
-          </Card>
-
-          {/* Demo Features */}
-          <div className="grid md:grid-cols-3 gap-8 mt-16">
-            <Card className="text-center">
-              <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
-                </div>
-                <CardTitle>Browse Courses</CardTitle>
-                <CardDescription>
-                  Explore our vast library of courses across different categories
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="text-center">
-              <CardHeader>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Play className="w-6 h-6 text-green-600" />
-                </div>
-                <CardTitle>Interactive Learning</CardTitle>
-                <CardDescription>
-                  Experience our interactive video player and learning tools
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="text-center">
-              <CardHeader>
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <ArrowRight className="w-6 h-6 text-purple-600" />
-                </div>
-                <CardTitle>Track Progress</CardTitle>
-                <CardDescription>
-                  See how easy it is to track your learning progress and achievements
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-
-          {/* CTA */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white text-center space-y-4 mt-16">
-            <h2 className="text-3xl font-bold">Ready to Start Learning?</h2>
-            <p className="text-blue-100 text-lg">
-              Join thousands of students already learning on our platform
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/signup">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
-                  Start Learning Today
-                </Button>
-              </Link>
-              <Link href="/courses">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                  Browse Courses
-                </Button>
-              </Link>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">Support</h3>
+              <div className="space-y-2">
+                <Link href="/help" className="block hover:text-white transition-colors">Help Center</Link>
+                <Link href="/contact" className="block hover:text-white transition-colors">Contact Us</Link>
+                <Link href="/community" className="block hover:text-white transition-colors">Community</Link>
+                <Link href="/blog" className="block hover:text-white transition-colors">Blog</Link>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">Company</h3>
+              <div className="space-y-2">
+                <Link href="/about" className="block hover:text-white transition-colors">About Us</Link>
+                <Link href="/careers" className="block hover:text-white transition-colors">Careers</Link>
+                <Link href="/privacy" className="block hover:text-white transition-colors">Privacy Policy</Link>
+                <Link href="/terms" className="block hover:text-white transition-colors">Terms of Service</Link>
+              </div>
             </div>
           </div>
+          <div className="border-t border-slate-800 mt-12 pt-8 text-center">
+            <p className="text-slate-400">© 2025 EduMarket. All rights reserved.</p>
+          </div>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }
