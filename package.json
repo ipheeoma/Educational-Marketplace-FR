@@ -21,10 +21,8 @@
     "@radix-ui/react-slider": "latest",
     "@radix-ui/react-slot": "latest",
     "@radix-ui/react-tabs": "latest",
-    "@solana/web3.js": "^1.91.8",
-    "@tanstack/react-query": "^5.45.1",
-    "@web3modal/ethers": "^5.0.3",
-    "@web3modal/wagmi": "^5.0.3",
+    "@supabase/supabase-js": "^2.44.4",
+    "@tanstack/react-query": "^5.51.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "ethers": "latest",
@@ -36,9 +34,8 @@
     "react-dom": "^19",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "viem": "^2.16.0",
-    "wagmi": "^2.10.0",
-    "web3modal": "^1.9.12"
+    "viem": "^2.17.4",
+    "wagmi": "^2.10.10"
   },
   "devDependencies": {
     "@types/node": "^22",

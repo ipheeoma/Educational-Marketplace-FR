@@ -1,18 +1,19 @@
 'use client'
-import { useState } from "react"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { BookOpen, Menu, X } from 'lucide-react'
+import { useState } from "react"
 import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function SignUpPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -86,86 +87,8 @@ export default function SignUpPage() {
         </div>
       </nav>
 
-      <main className="flex-1 flex items-center justify-center p-4">
+      <main className="flex-1 flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
-            <CardDescription>Create your account to get started</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" type="text" placeholder="John Doe" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
-              </div>
-              <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                Sign Up
-              </Button>
-            </form>
-            <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
-              <Link href="/auth/signin" className="underline text-blue-600 hover:text-blue-800">
-                Sign In
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-300 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-white">EduMarket</span>
-              </Link>
-              <p className="text-slate-400">Empowering learners worldwide with quality education and expert instruction.</p>
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">Platform</h3>
-              <div className="space-y-2">
-                <Link href="/courses" className="block hover:text-white transition-colors">Browse Courses</Link>
-                <Link href="/courses?view=categories" className="block hover:text-white transition-colors">Categories</Link>
-                <Link href="/about" className="block hover:text-white transition-colors">About</Link>
-                <Link href="/pricing" className="block hover:text-white transition-colors">Pricing</Link>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">Support</h3>
-              <div className="space-y-2">
-                <Link href="/help" className="block hover:text-white transition-colors">Help Center</Link>
-                <Link href="/contact" className="block hover:text-white transition-colors">Contact Us</Link>
-                <Link href="/community" className="block hover:text-white transition-colors">Community</Link>
-                <Link href="/blog" className="block hover:text-white transition-colors">Blog</Link>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">Company</h3>
-              <div className="space-y-2">
-                <Link href="/about" className="block hover:text-white transition-colors">About Us</Link>
-                <Link href="/careers" className="block hover:text-white transition-colors">Careers</Link>
-                <Link href="/privacy" className="block hover:text-white transition-colors">Privacy Policy</Link>
-                <Link href="/terms" className="block hover:text-white transition-colors">Terms of Service</Link>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-slate-800 mt-12 pt-8 text-center">
-            <p className="text-slate-400">© 2025 EduMarket. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  )
-}
+            <CardDescription>Enter your details below to create your
