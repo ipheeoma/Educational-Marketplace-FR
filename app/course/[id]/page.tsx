@@ -1,104 +1,38 @@
 'use client'
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BookOpen, Star, Users, Clock, Globe, CheckCircle, Play, Download, Share2, Heart, Menu, X } from 'lucide-react'
-import Image from "next/image"
 import Link from "next/link"
-import { WalletButton } from "@/components/wallet/WalletButton"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
+import { BookOpen, Menu, X, Star } from 'lucide-react'
 import { useState } from "react"
+import { WalletButton } from "@/components/wallet/WalletButton"
+import Image from "next/image"
 
-export default function CoursePage({ params }: { params: { id: string } }) {
-  const course = {
-    id: params.id,
-    title: "Complete Web Development Bootcamp",
-    subtitle: "Learn HTML, CSS, JavaScript, React, Node.js, and more",
-    instructor: {
-      name: "Sarah Johnson",
-      title: "Senior Full Stack Developer",
-      avatar: "/professional-headshot-female.png",
-      rating: 4.9,
-      students: 25000,
-      courses: 12
-    },
-    rating: 4.9,
-    students: 12500,
-    price: 89,
-    originalPrice: 199,
-    image: "/web-development-course.png",
-    category: "Development",
-    duration: "42 hours",
-    level: "Beginner",
-    language: "English",
-    lastUpdated: "December 2024",
-    bestseller: true,
-    description: "Master web development from scratch with this comprehensive bootcamp. Learn modern technologies and build real-world projects.",
-    whatYouLearn: [
-      "Build responsive websites with HTML5 and CSS3",
-      "Master JavaScript ES6+ and modern programming concepts",
-      "Create dynamic web applications with React",
-      "Build backend APIs with Node.js and Express",
-      "Work with databases using MongoDB",
-      "Deploy applications to production",
-      "Version control with Git and GitHub",
-      "Modern development tools and workflows"
-    ],
-    curriculum: [
-      {
-        title: "Getting Started",
-        lessons: 8,
-        duration: "2h 30m",
-        topics: ["Course Introduction", "Setting up Development Environment", "HTML Basics", "CSS Fundamentals"]
-      },
-      {
-        title: "JavaScript Fundamentals",
-        lessons: 12,
-        duration: "4h 15m",
-        topics: ["Variables and Data Types", "Functions", "Objects and Arrays", "DOM Manipulation"]
-      },
-      {
-        title: "React Development",
-        lessons: 15,
-        duration: "6h 45m",
-        topics: ["Components", "State Management", "Hooks", "Routing"]
-      },
-      {
-        title: "Backend Development",
-        lessons: 10,
-        duration: "5h 30m",
-        topics: ["Node.js Basics", "Express Framework", "Database Integration", "API Development"]
-      }
-    ],
-    requirements: [
-      "No prior programming experience required",
-      "A computer with internet connection",
-      "Willingness to learn and practice"
-    ],
-    reviews: [
-      {
-        name: "Alex Thompson",
-        avatar: "/professional-male-headshot.png",
-        rating: 5,
-        date: "2 weeks ago",
-        comment: "Excellent course! Sarah explains everything clearly and the projects are very practical."
-      },
-      {
-        name: "Maria Garcia",
-        avatar: "/professional-headshot-female.png",
-        rating: 5,
-        date: "1 month ago",
-        comment: "This course changed my career. I'm now working as a web developer thanks to the skills I learned here."
-      }
-    ]
-  }
-
+export default function CourseDetailPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  // Dummy data for a course
+  const course = {
+    id: "1",
+    title: "Advanced React & Redux",
+    instructor: "Jane Doe",
+    rating: 4.8,
+    reviews: 1200,
+    price: 199.99,
+    description: "Master React and Redux with advanced patterns, performance optimization, and real-world project development.",
+    imageUrl: "/react-redux-course.png",
+    modules: [
+      { title: "Introduction to Advanced React", duration: "1h 30m" },
+      { title: "Deep Dive into Redux Toolkit", duration: "2h 15m" },
+      { title: "React Hooks Best Practices", duration: "1h 45m" },
+      { title: "Performance Optimization", duration: "2h 00m" },
+      { title: "Testing React Applications", duration: "1h 00m" },
+    ],
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -172,273 +106,84 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
+      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Course Details */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Course Header */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Badge className="bg-blue-100 text-blue-700">{course.category}</Badge>
-                {course.bestseller && (
-                  <Badge className="bg-orange-500 text-white">Bestseller</Badge>
-                )}
-                <Badge variant="outline">{course.level}</Badge>
-              </div>
-              <h1 className="text-4xl font-bold text-slate-900">{course.title}</h1>
-              <p className="text-xl text-slate-600">{course.subtitle}</p>
-              <div className="flex items-center space-x-6 text-sm text-slate-600">
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span className="font-medium">{course.rating}</span>
-                  <span>({course.students.toLocaleString()} students)</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Clock className="w-4 h-4" />
-                  <span>{course.duration}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Globe className="w-4 h-4" />
-                  <span>{course.language}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Course Video/Image */}
-            <div className="relative">
-              <Image
-                src={course.image || "/placeholder.svg"}
-                alt={course.title}
-                width={800}
-                height={450}
-                className="w-full h-96 object-cover rounded-lg"
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <Image 
+                src={course.imageUrl || "/placeholder.svg"} 
+                alt={course.title} 
+                width={800} 
+                height={450} 
+                className="w-full h-auto rounded-lg mb-6" 
               />
-              <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
-                <Button size="lg" className="bg-white/90 text-slate-900 hover:bg-white">
-                  <Play className="w-6 h-6 mr-2" />
-                  Preview Course
-                </Button>
+              <h1 className="text-4xl font-bold text-slate-900 mb-4">{course.title}</h1>
+              <p className="text-lg text-slate-600 mb-4">{course.description}</p>
+              <div className="flex items-center text-slate-700 mb-4">
+                <span className="font-semibold mr-2">Instructor:</span> {course.instructor}
+              </div>
+              <div className="flex items-center text-slate-700 mb-6">
+                <Star className="w-5 h-5 text-yellow-500 mr-1" fill="currentColor" />
+                <span className="font-semibold mr-2">{course.rating}</span> ({course.reviews} reviews)
+              </div>
+              <div className="flex items-center space-x-4">
+                <span className="text-3xl font-bold text-slate-900">${course.price}</span>
+                <Link href="/checkout">
+                  <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                    Enroll Now
+                  </Button>
+                </Link>
               </div>
             </div>
 
-            {/* Course Tabs */}
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
-                <TabsTrigger value="instructor">Instructor</TabsTrigger>
-                <TabsTrigger value="reviews">Reviews</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="overview" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>What you'll learn</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid md:grid-cols-2 gap-3">
-                      {course.whatYouLearn.map((item, index) => (
-                        <div key={index} className="flex items-start space-x-3">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-slate-700">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Course Description</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-slate-700 leading-relaxed">{course.description}</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Requirements</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {course.requirements.map((req, index) => (
-                        <li key={index} className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-slate-700">{req}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="curriculum" className="space-y-4">
-                {course.curriculum.map((section, index) => (
-                  <Card key={index}>
-                    <CardHeader>
-                      <div className="flex justify-between items-center">
-                        <CardTitle className="text-lg">{section.title}</CardTitle>
-                        <div className="text-sm text-slate-600">
-                          {section.lessons} lessons • {section.duration}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {section.topics.map((topic, topicIndex) => (
-                          <div key={topicIndex} className="flex items-center space-x-3 py-2">
-                            <Play className="w-4 h-4 text-slate-400" />
-                            <span className="text-slate-700">{topic}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </TabsContent>
-
-              <TabsContent value="instructor" className="space-y-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <Avatar className="w-20 h-20">
-                        <AvatarImage src={course.instructor.avatar || "/placeholder.svg"} />
-                        <AvatarFallback>{course.instructor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>
-                      <div className="space-y-2">
-                        <h3 className="text-2xl font-bold text-slate-900">{course.instructor.name}</h3>
-                        <p className="text-slate-600">{course.instructor.title}</p>
-                        <div className="flex items-center space-x-6 text-sm text-slate-600">
-                          <div className="flex items-center space-x-1">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span>{course.instructor.rating} rating</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Users className="w-4 h-4" />
-                            <span>{course.instructor.students.toLocaleString()} students</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <BookOpen className="w-4 h-4" />
-                            <span>{course.instructor.courses} courses</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="reviews" className="space-y-6">
-                <div className="flex items-center space-x-4 mb-6">
-                  <div className="text-4xl font-bold text-slate-900">{course.rating}</div>
-                  <div>
-                    <div className="flex items-center space-x-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                    <p className="text-slate-600">{course.students.toLocaleString()} reviews</p>
+            {/* Course Content/Modules */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-bold text-slate-900 mb-6">Course Content</h2>
+              <div className="space-y-4">
+                {course.modules.map((module, index) => (
+                  <div key={index} className="flex justify-between items-center border-b pb-3 last:border-b-0">
+                    <span className="text-slate-700">{index + 1}. {module.title}</span>
+                    <span className="text-slate-500 text-sm">{module.duration}</span>
                   </div>
-                </div>
-                
-                <div className="space-y-6">
-                  {course.reviews.map((review, index) => (
-                    <Card key={index}>
-                      <CardContent className="p-6">
-                        <div className="flex items-start space-x-4">
-                          <Avatar>
-                            <AvatarImage src={review.avatar || "/placeholder.svg"} />
-                            <AvatarFallback>{review.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                          </Avatar>
-                          <div className="space-y-2 flex-1">
-                            <div className="flex items-center justify-between">
-                              <h4 className="font-semibold text-slate-900">{review.name}</h4>
-                              <span className="text-sm text-slate-500">{review.date}</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              {[...Array(review.rating)].map((_, i) => (
-                                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              ))}
-                            </div>
-                            <p className="text-slate-700">{review.comment}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-            </Tabs>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-24">
-              <CardContent className="p-6 space-y-6">
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-3xl font-bold text-slate-900">${course.price}</span>
-                    <span className="text-lg text-slate-500 line-through">${course.originalPrice}</span>
-                    <Badge className="bg-green-100 text-green-700">
-                      {Math.round((1 - course.price / course.originalPrice) * 100)}% off
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-red-600 font-medium">🔥 Limited time offer!</p>
-                </div>
+          {/* Sidebar - What you'll learn, Requirements, etc. */}
+          <div className="lg:col-span-1 space-y-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>What you&apos;ll learn</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-disc list-inside space-y-2 text-slate-700">
+                  <li>Build complex React applications with Redux</li>
+                  <li>Optimize React component performance</li>
+                  <li>Implement advanced state management patterns</li>
+                  <li>Write effective unit and integration tests</li>
+                  <li>Deploy React apps to production</li>
+                </ul>
+              </CardContent>
+            </Card>
 
-                <div className="space-y-3">
-                  <Link href="/checkout">
-                    <Button className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-lg">
-                      Enroll Now
-                    </Button>
-                  </Link>
-                  <Button variant="outline" className="w-full h-12">
-                    Add to Cart
-                  </Button>
-                </div>
-
-                <div className="text-center text-sm text-slate-600">
-                  30-Day Money-Back Guarantee
-                </div>
-
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-slate-900">This course includes:</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="w-4 h-4 text-slate-500" />
-                      <span>{course.duration} on-demand video</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Download className="w-4 h-4 text-slate-500" />
-                      <span>Downloadable resources</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <CheckCircle className="w-4 h-4 text-slate-500" />
-                      <span>Certificate of completion</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Globe className="w-4 h-4 text-slate-500" />
-                      <span>Lifetime access</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    <Heart className="w-4 h-4 mr-2" />
-                    Wishlist
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Share
-                  </Button>
-                </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Requirements</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-disc list-inside space-y-2 text-slate-700">
+                  <li>Basic understanding of React</li>
+                  <li>Familiarity with JavaScript ES6+</li>
+                  <li>Node.js and npm/yarn installed</li>
+                </ul>
               </CardContent>
             </Card>
           </div>
         </div>
-      </div>
+      </main>
+
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

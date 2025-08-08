@@ -88,75 +88,86 @@ export default function CheckoutPage() {
         </div>
       </nav>
 
-      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-4xl font-bold text-slate-900 mb-8 text-center">Checkout</h1>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Order Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between">
-                <p className="text-slate-700">Complete Web Development Bootcamp</p>
-                <p className="font-semibold text-slate-900">$89.00</p>
-              </div>
-              <div className="flex justify-between">
-                <p className="text-slate-700">Subtotal</p>
-                <p className="font-semibold text-slate-900">$89.00</p>
-              </div>
-              <div className="flex justify-between font-bold text-lg">
-                <p className="text-slate-900">Total</p>
-                <p className="text-slate-900">$89.00</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Payment Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Information</CardTitle>
-              <CardDescription>Enter your payment details to complete the purchase.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="card-number">Card Number</Label>
-                <Input id="card-number" placeholder="XXXX-XXXX-XXXX-XXXX" required type="text" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="expiry-date">Expiry Date</Label>
-                  <Input id="expiry-date" placeholder="MM/YY" required type="text" />
+      <main className="flex-1 flex items-center justify-center py-12 px-4">
+        <Card className="w-full max-w-2xl">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Checkout</CardTitle>
+            <CardDescription>Complete your purchase by filling out the details below.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Billing Information</h3>
+                <div>
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input id="fullName" type="text" placeholder="John Doe" required />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cvv">CVV</Label>
-                  <Input id="cvv" placeholder="XXX" required type="text" />
+                <div>
+                  <Label htmlFor="address">Address</Label>
+                  <Input id="address" type="text" placeholder="123 Main St" required />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="city">City</Label>
+                    <Input id="city" type="text" placeholder="New York" required />
+                  </div>
+                  <div>
+                    <Label htmlFor="zip">ZIP Code</Label>
+                    <Input id="zip" type="text" placeholder="10001" required />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="country">Country</Label>
+                  <Select>
+                    <SelectTrigger id="country">
+                      <SelectValue placeholder="Select a country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="usa">United States</SelectItem>
+                      <SelectItem value="canada">Canada</SelectItem>
+                      <SelectItem value="uk">United Kingdom</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="card-name">Name on Card</Label>
-                <Input id="card-name" placeholder="John Doe" required type="text" />
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Payment Information</h3>
+                <div>
+                  <Label htmlFor="cardNumber">Card Number</Label>
+                  <Input id="cardNumber" type="text" placeholder="**** **** **** ****" required />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="expiryDate">Expiry Date</Label>
+                    <Input id="expiryDate" type="text" placeholder="MM/YY" required />
+                  </div>
+                  <div>
+                    <Label htmlFor="cvv">CVV</Label>
+                    <Input id="cvv" type="text" placeholder="123" required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-medium">Order Summary</h4>
+                  <div className="flex justify-between">
+                    <span>Course Price:</span>
+                    <span>$99.00</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Tax:</span>
+                    <span>$5.00</span>
+                  </div>
+                  <div className="flex justify-between font-bold">
+                    <span>Total:</span>
+                    <span>$104.00</span>
+                  </div>
+                </div>
+                <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                  Place Order
+                </Button>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="usa">United States</SelectItem>
-                    <SelectItem value="canada">Canada</SelectItem>
-                    <SelectItem value="uk">United Kingdom</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                Complete Purchase
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+            </form>
+          </CardContent>
+        </Card>
       </main>
 
       {/* Footer */}

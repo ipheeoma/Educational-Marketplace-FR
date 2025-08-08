@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -89,30 +89,27 @@ export default function SignInPage() {
 
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold">Sign In</CardTitle>
-            <CardDescription>Enter your email below to sign in to your account.</CardDescription>
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
+            <CardDescription>Enter your credentials to access your account.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" placeholder="m@example.com" required type="email" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link className="text-sm underline" href="#">
-                  Forgot password?
-                </Link>
+          <CardContent>
+            <form className="space-y-4">
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="m@example.com" required />
               </div>
-              <Input id="password" required type="password" />
-            </div>
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-              Sign In
-            </Button>
-            <div className="text-center text-sm text-gray-500">
-              Don't have an account?{" "}
-              <Link className="underline" href="/auth/signup">
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" required />
+              </div>
+              <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                Sign In
+              </Button>
+            </form>
+            <div className="mt-4 text-center text-sm">
+              Don&apos;t have an account?{" "}
+              <Link href="/auth/signup" className="underline text-blue-600 hover:text-blue-800">
                 Sign Up
               </Link>
             </div>

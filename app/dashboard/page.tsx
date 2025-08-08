@@ -4,12 +4,43 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { BookOpen, Menu, X } from 'lucide-react'
+import { BookOpen, Menu, X, GraduationCap, Clock, CheckCircle } from 'lucide-react'
 import { useState } from "react"
 import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function DashboardPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  // Dummy data for dashboard
+  const enrolledCourses = [
+    {
+      id: 1,
+      title: "Web Development Fundamentals",
+      progress: 75,
+      lastAccessed: "2 days ago",
+      imageUrl: "/web-development-course.png",
+    },
+    {
+      id: 2,
+      title: "Python for Data Analysis",
+      progress: 40,
+      lastAccessed: "5 days ago",
+      imageUrl: "/python-data-analysis-course.png",
+    },
+    {
+      id: 3,
+      title: "UI/UX Design Principles",
+      progress: 90,
+      lastAccessed: "1 week ago",
+      imageUrl: "/ui-ux-design-course.png",
+    },
+  ]
+
+  const achievements = [
+    { id: 1, title: "Course Completion Master", description: "Completed 5 courses", icon: <GraduationCap className="w-6 h-6 text-blue-600" /> },
+    { id: 2, title: "Active Learner", description: "Logged in 7 consecutive days", icon: <Clock className="w-6 h-6 text-green-600" /> },
+    { id: 3, title: "Top Reviewer", description: "Wrote 10 course reviews", icon: <CheckCircle className="w-6 h-6 text-purple-600" /> },
+  ]
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -86,82 +117,54 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-4xl font-bold text-slate-900 mb-8">My Dashboard</h1>
+      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold text-slate-900 mb-8">Dashboard</h1>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Enrolled Courses */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Enrolled Courses</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold">Web Development Bootcamp</h3>
-                  <p className="text-sm text-slate-600">Progress: 75%</p>
-                </div>
-                <Progress value={75} className="w-1/2" />
-                <Link href="/course/web-development-bootcamp">
-                  <Button size="sm">Continue</Button>
-                </Link>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold">Data Science with Python</h3>
-                  <p className="text-sm text-slate-600">Progress: 40%</p>
-                </div>
-                <Progress value={40} className="w-1/2" />
-                <Link href="/course/data-science-python">
-                  <Button size="sm">Continue</Button>
-                </Link>
-              </div>
-              <Button variant="outline" className="w-full">View All Courses</Button>
-            </CardContent>
-          </Card>
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">My Enrolled Courses</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {enrolledCourses.map(course => (
+                <Card key={course.id} className="overflow-hidden">
+                  <img src={course.imageUrl || "/placeholder.svg"} alt={course.title} className="w-full h-40 object-cover" />
+                  <CardContent className="p-4">
+                    <CardTitle className="text-xl font-semibold mb-2">{course.title}</CardTitle>
+                    <div className="flex items-center justify-between text-sm text-slate-600 mb-3">
+                      <span>Progress: {course.progress}%</span>
+                      <span>Last accessed: {course.lastAccessed}</span>
+                    </div>
+                    <Progress value={course.progress} className="h-2 mb-4" />
+                    <Link href={`/course/${course.id}`}>
+                      <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                        Continue Learning
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
 
           {/* Achievements */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Achievements</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold">
-                  🏆
-                </div>
-                <div>
-                  <h3 className="font-semibold">Web Developer Certificate</h3>
-                  <p className="text-sm text-slate-600">Completed on: Jan 15, 2024</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center text-white font-bold">
-                  🌟
-                </div>
-                <div>
-                  <h3 className="font-semibold">Data Science Novice Badge</h3>
-                  <p className="text-sm text-slate-600">Earned on: Feb 20, 2024</p>
-                </div>
-              </div>
-              <Button variant="outline" className="w-full">View All Achievements</Button>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-sm text-slate-700">
-                <p><span className="font-semibold">Mar 10, 2024:</span> Completed "Introduction to React Hooks" lesson.</p>
-                <p><span className="font-semibold">Mar 08, 2024:</span> Started "Advanced Redux Patterns" module.</p>
-                <p><span className="font-semibold">Mar 05, 2024:</span> Enrolled in "UI/UX Design Fundamentals" course.</p>
-              </div>
-              <Button variant="outline" className="w-full">View Full Activity Log</Button>
-            </CardContent>
-          </Card>
+          <section>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">My Achievements</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {achievements.map(achievement => (
+                <Card key={achievement.id}>
+                  <CardContent className="flex items-center p-4 space-x-4">
+                    <div className="flex-shrink-0">
+                      {achievement.icon}
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold">{achievement.title}</CardTitle>
+                      <p className="text-sm text-slate-600">{achievement.description}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
         </div>
       </main>
 

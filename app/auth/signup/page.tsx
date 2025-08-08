@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -89,29 +89,35 @@ export default function SignUpPage() {
 
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-3xl font-bold">Sign Up</CardTitle>
-            <CardDescription>Enter your details below to create a new account.</CardDescription>
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
+            <CardDescription>Create an account to get started.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" placeholder="John Doe" required type="text" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" placeholder="m@example.com" required type="email" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" required type="password" />
-            </div>
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-              Sign Up
-            </Button>
-            <div className="text-center text-sm text-gray-500">
+          <CardContent>
+            <form className="space-y-4">
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" type="text" placeholder="John Doe" required />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="m@example.com" required />
+              </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" required />
+              </div>
+              <div>
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input id="confirm-password" type="password" required />
+              </div>
+              <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+                Sign Up
+              </Button>
+            </form>
+            <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <Link className="underline" href="/auth/signin">
+              <Link href="/auth/signin" className="underline text-blue-600 hover:text-blue-800">
                 Sign In
               </Link>
             </div>
