@@ -1,17 +1,14 @@
-'use client'
-
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { BookOpen, PlayCircle, Menu, X } from 'lucide-react'
-import Link from 'next/link'
-import Image from 'next/image' // Add this line
-import { WalletButton } from '@/components/wallet/WalletButton'
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { BookOpen, Menu, X } from 'lucide-react'
+import { useState } from "react"
+import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function DemoPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,35 +82,13 @@ export default function DemoPage() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 text-center">
-        <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">Watch Our Demo</h1>
-        <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-12">
-          Get a quick tour of EduMarket and see how our platform can help you achieve your learning goals.
-        </p>
-
-        <div className="relative w-full max-w-4xl mx-auto aspect-video bg-slate-200 rounded-lg overflow-hidden shadow-xl">
-          {/* Placeholder for video player */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70">
-            <PlayCircle className="w-24 h-24 text-white/80" />
-            <span className="sr-only">Play Demo Video</span>
-          </div>
-          <Image
-            src="/modern-online-learning.png" // Using an existing image as a video thumbnail placeholder
-            alt="Demo Video Thumbnail"
-            layout="fill"
-            objectFit="cover"
-            className="opacity-50"
-          />
-        </div>
-
-        <div className="mt-12 space-y-6">
-          <h2 className="text-3xl font-bold text-slate-900">Ready to dive deeper?</h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Explore our full range of courses and start your learning journey today.
-          </p>
-          <Link href="/courses">
-            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-lg px-8">
-              Explore All Courses
+      <main className="flex-1 flex items-center justify-center py-12 px-4">
+        <div className="text-center space-y-6">
+          <h1 className="text-4xl font-bold text-slate-900">Demo Page</h1>
+          <p className="text-lg text-slate-600">This is a placeholder for your interactive demo content.</p>
+          <Link href="/">
+            <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+              Go to Homepage
             </Button>
           </Link>
         </div>

@@ -1,55 +1,16 @@
-'use client'
-
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { BookOpen, LayoutDashboard, GraduationCap, Settings, Menu, X, Award } from 'lucide-react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { WalletButton } from '@/components/wallet/WalletButton'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
+import { BookOpen, Menu, X } from 'lucide-react'
+import { useState } from "react"
+import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function DashboardPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const user = {
-    name: "Jane Doe",
-    email: "jane.doe@example.com",
-    avatar: "/professional-headshot-female.png",
-    coursesEnrolled: 5,
-    coursesCompleted: 2,
-    progress: 40, // Overall progress
-  }
-
-  const enrolledCourses = [
-    {
-      id: 1,
-      title: "Complete Web Development Bootcamp",
-      instructor: "Sarah Johnson",
-      progress: 75,
-      image: "/web-development-course.png",
-    },
-    {
-      id: 2,
-      title: "Data Science & Machine Learning",
-      instructor: "Dr. Michael Chen",
-      progress: 20,
-      image: "/data-science-course.png",
-    },
-    {
-      id: 4,
-      title: "UI/UX Design Masterclass",
-      instructor: "Emma Rodriguez",
-      progress: 90,
-      image: "/ui-ux-design-course.png",
-    },
-  ]
-
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -123,115 +84,84 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <h1 className="text-4xl font-bold text-slate-900 mb-8">Welcome, {user.name}!</h1>
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">My Dashboard</h1>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
-          <Card className="p-6 text-center shadow-md">
-            <CardTitle className="text-2xl font-bold text-slate-900">{user.coursesEnrolled}</CardTitle>
-            <CardDescription className="text-slate-600">Courses Enrolled</CardDescription>
-          </Card>
-          <Card className="p-6 text-center shadow-md">
-            <CardTitle className="text-2xl font-bold text-slate-900">{user.coursesCompleted}</CardTitle>
-            <CardDescription className="text-slate-600">Courses Completed</CardDescription>
-          </Card>
-          <Card className="p-6 text-center shadow-md">
-            <CardTitle className="text-2xl font-bold text-slate-900">{user.progress}%</CardTitle>
-            <CardDescription className="text-slate-600">Overall Progress</CardDescription>
-            <Progress value={user.progress} className="mt-4 h-2" />
-          </Card>
-        </div>
-
-        <Tabs defaultValue="my-courses" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4 h-12">
-            <TabsTrigger value="my-courses" className="text-base">My Courses</TabsTrigger>
-            <TabsTrigger value="wishlist" className="text-base">Wishlist</TabsTrigger>
-            <TabsTrigger value="certificates" className="text-base">Certificates</TabsTrigger>
-            <TabsTrigger value="settings" className="text-base">Settings</TabsTrigger>
-          </TabsList>
-          <TabsContent value="my-courses" className="mt-6">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Currently Enrolled</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {enrolledCourses.map(course => (
-                <Card key={course.id} className="shadow-md">
-                  <div className="relative h-40 w-full rounded-t-lg overflow-hidden">
-                    <Image
-                      src={course.image || "/placeholder.svg"}
-                      alt={course.title}
-                      layout="fill"
-                      objectFit="cover"
-                    />
-                  </div>
-                  <CardContent className="p-4 space-y-3">
-                    <h3 className="text-lg font-semibold text-slate-900">{course.title}</h3>
-                    <p className="text-sm text-slate-600">by {course.instructor}</p>
-                    <div className="flex items-center space-x-2">
-                      <Progress value={course.progress} className="h-2 flex-1" />
-                      <span className="text-sm text-slate-700">{course.progress}%</span>
-                    </div>
-                    <Link href={`/course/${course.id}`}>
-                      <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                        Continue Learning
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-            {enrolledCourses.length === 0 && (
-              <div className="text-center py-12">
-                <GraduationCap className="w-16 h-16 mx-auto text-slate-400 mb-4" />
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">No courses enrolled yet!</h3>
-                <p className="text-slate-600 mb-4">Start your learning journey by exploring our courses.</p>
-                <Link href="/courses">
-                  <Button variant="outline">Browse Courses</Button>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Enrolled Courses */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Enrolled Courses</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold">Web Development Bootcamp</h3>
+                  <p className="text-sm text-slate-600">Progress: 75%</p>
+                </div>
+                <Progress value={75} className="w-1/2" />
+                <Link href="/course/web-development-bootcamp">
+                  <Button size="sm">Continue</Button>
                 </Link>
               </div>
-            )}
-          </TabsContent>
-          <TabsContent value="wishlist" className="mt-6">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">My Wishlist</h2>
-            <div className="text-center py-12">
-              <BookOpen className="w-16 h-16 mx-auto text-slate-400 mb-4" />
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Your wishlist is empty</h3>
-              <p className="text-slate-600 mb-4">Add courses you're interested in to your wishlist.</p>
-              <Link href="/courses">
-                <Button variant="outline">Browse Courses</Button>
-              </Link>
-            </div>
-          </TabsContent>
-          <TabsContent value="certificates" className="mt-6">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">My Certificates</h2>
-            <div className="text-center py-12">
-              <Award className="w-16 h-16 mx-auto text-slate-400 mb-4" />
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">No certificates earned yet!</h3>
-              <p className="text-slate-600 mb-4">Complete courses to earn your certificates.</p>
-              <Link href="/courses">
-                <Button variant="outline">Explore Courses</Button>
-              </Link>
-            </div>
-          </TabsContent>
-          <TabsContent value="settings" className="mt-6">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Account Settings</h2>
-            <Card className="p-6 shadow-md">
-              <CardHeader className="p-0 mb-4">
-                <CardTitle className="text-xl font-bold text-slate-900">Profile Information</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 space-y-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" defaultValue={user.name} />
+                  <h3 className="font-semibold">Data Science with Python</h3>
+                  <p className="text-sm text-slate-600">Progress: 40%</p>
+                </div>
+                <Progress value={40} className="w-1/2" />
+                <Link href="/course/data-science-python">
+                  <Button size="sm">Continue</Button>
+                </Link>
+              </div>
+              <Button variant="outline" className="w-full">View All Courses</Button>
+            </CardContent>
+          </Card>
+
+          {/* Achievements */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Achievements</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold">
+                  🏆
                 </div>
                 <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue={user.email} disabled />
+                  <h3 className="font-semibold">Web Developer Certificate</h3>
+                  <p className="text-sm text-slate-600">Completed on: Jan 15, 2024</p>
                 </div>
-                <Button className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">Save Changes</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center text-white font-bold">
+                  🌟
+                </div>
+                <div>
+                  <h3 className="font-semibold">Data Science Novice Badge</h3>
+                  <p className="text-sm text-slate-600">Earned on: Feb 20, 2024</p>
+                </div>
+              </div>
+              <Button variant="outline" className="w-full">View All Achievements</Button>
+            </CardContent>
+          </Card>
+
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-sm text-slate-700">
+                <p><span className="font-semibold">Mar 10, 2024:</span> Completed "Introduction to React Hooks" lesson.</p>
+                <p><span className="font-semibold">Mar 08, 2024:</span> Started "Advanced Redux Patterns" module.</p>
+                <p><span className="font-semibold">Mar 05, 2024:</span> Enrolled in "UI/UX Design Fundamentals" course.</p>
+              </div>
+              <Button variant="outline" className="w-full">View Full Activity Log</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">

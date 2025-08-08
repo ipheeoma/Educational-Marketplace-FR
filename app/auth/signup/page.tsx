@@ -1,28 +1,17 @@
-'use client'
-
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import Link from 'next/link'
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { BookOpen, Menu, X } from 'lucide-react'
-import { WalletButton } from '@/components/wallet/WalletButton'
+import { useState } from "react"
+import { WalletButton } from "@/components/wallet/WalletButton"
 
 export default function SignUpPage() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Sign Up Attempt:', { name, email, password })
-    // Implement actual sign-up logic here (e.g., API call)
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -96,61 +85,37 @@ export default function SignUpPage() {
         </div>
       </nav>
 
-      <div className="flex items-center justify-center py-12 lg:py-20">
+      <main className="flex-1 flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-slate-900">Sign Up</CardTitle>
-            <CardDescription className="text-slate-600">
-              Create your account to start learning.
-            </CardDescription>
+          <CardHeader className="space-y-1 text-center">
+            <CardTitle className="text-3xl font-bold">Sign Up</CardTitle>
+            <CardDescription>Enter your details below to create a new account.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="John Doe"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
-                Sign Up
-              </Button>
-              <div className="text-center text-sm text-slate-600">
-                Already have an account?{' '}
-                <Link href="/auth/signin" className="text-blue-600 hover:underline">
-                  Sign In
-                </Link>
-              </div>
-            </form>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" placeholder="John Doe" required type="text" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" placeholder="m@example.com" required type="email" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" required type="password" />
+            </div>
+            <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800">
+              Sign Up
+            </Button>
+            <div className="text-center text-sm text-gray-500">
+              Already have an account?{" "}
+              <Link className="underline" href="/auth/signin">
+                Sign In
+              </Link>
+            </div>
           </CardContent>
         </Card>
-      </div>
+      </main>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">

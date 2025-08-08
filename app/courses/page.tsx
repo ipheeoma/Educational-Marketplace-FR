@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, Suspense } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,8 +14,7 @@ import Link from "next/link"
 import { WalletButton } from "@/components/wallet/WalletButton"
 import { useRouter } from "next/navigation"
 
-// Original CoursesPage component (now renamed to CoursesPageContent for clarity)
-function CoursesPageContent() { // Renamed from default export
+export default function CoursesPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
@@ -535,14 +534,5 @@ function CoursesPageContent() { // Renamed from default export
         </div>
       </footer>
     </div>
-  )
-}
-
-// New default export with Suspense boundary
-export default function CoursesPage() {
-  return (
-    <Suspense fallback={<div>Loading courses...</div>}>
-      <CoursesPageContent />
-    </Suspense>
   )
 }
